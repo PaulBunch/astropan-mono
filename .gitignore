@@ -1,0 +1,75 @@
+# JetBrains
+.idea/
+*.iml
+*.iws
+
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# Общие файлы для Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Виртуальное окружение
+env/
+venv/
+ENV/
+.venv/
+env.bak/
+.venv-*/
+
+# Локальные настройки
+.env
+.env.local
+*.local.py
+config.local.py
+
+# База данных
+*.db
+*.sqlite3
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# JS / Node
+node_modules/
+npm-debug.log*
+
+# Вспомогательные директории и файлы
+/_output/
+/_results/
+/data/
+/user/
+/changes.txt
+/scripts/_formatted_html_output/
+/_auth/
+credentials.py
+credentials.json
+token.json
+/_inbox/
+/app_analysis.md
+/docs/temp.md
+__temp__/
+src/references/
+dist/
+src/preview.svg
