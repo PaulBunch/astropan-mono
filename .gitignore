@@ -71,5 +71,6 @@ token.json
 /docs/temp.md
 __temp__/
 src/references/
-dist/
 src/preview.svg
+build/
+dist/
