@@ -102,3 +102,119 @@ Inkscape (рисование)
 ```
 
 Glyphr Studio остаётся для визуальной проверки метрик и промежуточного просмотра — но не как единственный путь сборки.
+
+## Парсинг SVG и кривые Безье
+
+Для парсинга SVG используется `fontmake` + UFO. Для используемого стека это правильный выбор.
+
+`fontmake` решает все три проблемы автоматически: 
+- парсит SVG, 
+- конвертирует кубические кривые в квадратичные через `cu2qu` (та же библиотека, которую используют Google Fonts), 
+- переворачивает оси.
+
+Если писать на голом `fonttools`, `build.py` превращается в 300 строк с ручной обработкой edge cases. С `fontmake` — в 30 строк.
+
+```bash
+pip install fonttools brotli fontmake ufo2ft
+```
+
+Рабочая схема:
+
+```
+src/glyphs/*.svg → build.py создаёт UFO → fontmake собирает TTF → pyftsubset делает woff2
+```
+
+UFO (Unified Font Object) — это просто папка с текстовыми файлами. Человекочитаемый формат, отлично дружит с git.
+
+## Инверсия оси Y
+
+`build.py` должен переворачивать оси автоматически. Это обязательная часть пайплайна, не опциональная.
+
+Формула для каждой точки контура:
+
+```python
+y_font = ascender - y_inkscape
+# При ascender=800 и viewBox высотой 1000:
+# y_inkscape=0 (верх) → y_font=800 (ascender)
+# y_inkscape=800 (baseline в Inkscape) → y_font=0 (baseline в шрифте)
+# y_inkscape=1000 (низ) → y_font=-200 (descender)
+```
+
+Это нужно прописать один раз в `build.py` и забыть.
+
+## Маппинг Unicode
+
+Словарь в `config.toml` предпочтительнее имён файлов. 
+
+Аргументы:
+- Имена файлов `u2648.svg` неудобны для человека — при работе с глифами постоянно нужно держать в голове таблицу кодов. `aries.svg` говорит сразу.
+- Словарь в `config.toml` — единственный источник истины, его легко читать и редактировать, он версионируется в git отдельно от векторов.
+
+```toml
+# config.toml
+
+[font]
+family_name = "AstroPan Mono"
+version = "1.0"
+upm = 1000
+ascender = 800
+descender = -200
+advance_width_base = 600
+
+[glyphs]
+# Знаки зодиака
+aries   = "U+2648"
+taurus  = "U+2649"
+gemini  = "U+264A"
+cancer  = "U+264B"
+leo     = "U+264C"
+virgo   = "U+264D"
+libra   = "U+264E"
+scorpio = "U+264F"
+sagittarius = "U+2650"
+capricorn   = "U+2651"
+aquarius    = "U+2652"
+pisces      = "U+2653"
+
+# Планеты
+sun     = "U+2609"
+moon    = "U+263D"
+mercury = "U+263F"
+venus   = "U+2640"
+mars    = "U+2642"
+jupiter = "U+2643"
+saturn  = "U+2644"
+uranus  = "U+2645"
+neptune = "U+2646"
+pluto   = "U+2647"
+
+# Аспекты
+conjunction = "U+260C"
+sextile     = "U+2736"
+square      = "U+25A1"
+trine       = "U+25B3"
+opposition  = "U+260D"
+
+# Дома (PUA)
+house_1  = "U+E000"
+house_2  = "U+E001"
+house_3  = "U+E002"
+house_4  = "U+E003"
+house_5  = "U+E004"
+house_6  = "U+E005"
+house_7  = "U+E006"
+house_8  = "U+E007"
+house_9  = "U+E008"
+house_10 = "U+E009"
+house_11 = "U+E00A"
+house_12 = "U+E00B"
+
+[glyph_widths]
+# Переопределение ширины для широких глифов
+# Если не указано — используется advance_width_base
+saturn  = 900
+pluto   = 900
+mercury = 900
+```
+
+Секция `[glyph_widths]` решает вопрос Wide-глифов — переопределяются только те символы которые не влезают в базовую ширину, остальные наследуют `advance_width_base`.
