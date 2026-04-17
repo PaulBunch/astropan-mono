@@ -1,0 +1,5 @@
+# Инструментарий для сборки шрифта
+fontmake>=3.11.1
+fonttools[ufo,woff2,unicode]
+ufoLib2
+brotli
