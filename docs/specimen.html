@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: 'AstroPan Mono';
+            /*src: url('/dist/astropan-mono.woff2') format('woff2');*/
+            src: url('/dist/astropan-mono.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: block;
+        }
+        .test-grid {
+            font-family: 'AstroPan Mono';
+            font-size: 10px;
+            line-height: 1;
+            /* Варианты сглаживания для сравнения */
+        }
+        .label {
+            font-family: "JetBrains Mono", sans-serif; /* Обычный текст для описания */
+            font-size: 10px;
+            line-height: 1;
+            margin-left: 10px;
+        }
+        .smooth { -webkit-font-smoothing: antialiased; }
+        .pixel { -webkit-font-smoothing: none; } /* Грубый рендеринг без сглаживания */
+    </style>
+</head>
+<body>
+    <!-- &#xe000; — это код test_glyph -->
+    <div>
+        <span class="test-grid smooth">&#xe000; </span>
+        <span class="label">(Сглаженный 10px)</span>
+    </div>
+    <div>
+        <span class="test-grid pixel">&#xe000; </span>
+        <span class="label">(Без сглаживания 10px)</span>
+    </div>
+    <div>
+        <span style="font-size: 100px;" class="test-grid">&#xe000; </span>
+        <span class="label">(Для проверки формы)</span>
+    </div>
+</body>
+</html>
