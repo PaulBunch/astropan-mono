@@ -1,0 +1,110 @@
+[font]
+family_name  = "AstroPan Mono"
+version      = "1.0"
+copyright    = "Copyright (c) 2026, Paul Bunch (p.m.puchkov@gmail.com), with Reserved Font Name \"AstroPan Mono\"."
+designer     = "Pavel M. Puchkov"
+designer_url = "https://github.com/PaulBunch"
+license      = "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://openfontlicense.org"
+license_url  = "https://openfontlicense.org"
+vendor       = "BNCH"  # Уникальный 4-символьный ID
+# PFM Family (Proportional/Monospace/etc для Windows)
+# 49 = Monospace (Fixed Width)
+pfm_family   = 49  # TODO: Определиться с шириной и добавить этот параметр в build.py
+# fsType (Embeddable): 0 = Installable (полные права на внедрение)
+fs_type      = 0
+
+
+[metrics]
+
+# --- Метрики SVG‐холста ---
+
+upm                = 1000
+advance_width_base =  600
+ascender_upm       =  800
+
+# --- Метрики на основе JetBrains Mono ---
+
+# Основные вертикальные границы
+ascender           = 1020
+descender          = -300
+line_gap           =    0
+
+# Специальные высоты
+cap_height         =  730
+x_height           =  550
+
+# Win-метрики (обычно совпадают с typo или чуть больше для обрезки)
+win_ascent         = 1020
+win_descent        =  300
+
+# Подчеркивание
+underline_position = -155
+underline_thickness =  50
+
+# Strikeout (Зачеркивание)
+strikeout_position =  320
+strikeout_size     =   50
+
+# Индексы (Subscript / Superscript)
+sub_size_y         =  600
+sub_offset_y       =   75
+super_size_y       =  600
+super_offset_y     =  350
+
+[glyphs]
+# Знаки зодиака
+aries       = "U+2648"
+taurus      = "U+2649"
+gemini      = "U+264A"
+cancer      = "U+264B"
+leo         = "U+264C"
+virgo       = "U+264D"
+libra       = "U+264E"
+scorpio     = "U+264F"
+sagittarius = "U+2650"
+capricorn   = "U+2651"
+aquarius    = "U+2652"
+pisces      = "U+2653"
+
+# Планеты
+sun         = "U+2609"
+moon        = "U+263D"
+mercury     = "U+263F"
+venus       = "U+2640"
+mars        = "U+2642"
+jupiter     = "U+2643"
+saturn      = "U+2644"
+uranus      = "U+2645"
+neptune     = "U+2646"
+pluto       = "U+2647"
+
+# Аспекты
+conjunction = "U+260C"
+sextile     = "U+2736"
+square      = "U+25A1"
+trine       = "U+25B3"
+opposition  = "U+260D"
+
+# Тестовый глиф (PUA)
+test_glyph  = "U+E000"
+
+# Дома (PUA)
+house_1     = "U+E001"
+house_2     = "U+E002"
+house_3     = "U+E003"
+house_4     = "U+E004"
+house_5     = "U+E005"
+house_6     = "U+E006"
+house_7     = "U+E007"
+house_8     = "U+E008"
+house_9     = "U+E009"
+house_10    = "U+E00A"
+house_11    = "U+E00B"
+house_12    = "U+E00C"
+
+[glyph_widths]
+# Переопределение ширины для широких глифов
+# Если не указано — используется advance_width_base
+saturn        = 900
+pluto         = 900
+mercury       = 900
