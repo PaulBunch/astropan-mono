@@ -1,0 +1,68 @@
+# Запускается при каждом пуше в main
+# Собирает шрифт и публикует specimen на GitHub Pages
+
+name: Build and deploy specimen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # ручной запуск из интерфейса GitHub
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install font toolchain
+        run: pip install -r requirements.txt
+
+      - name: Build font
+        run: python scripts/build.py
+
+      # Собираем структуру сайта в _site/
+      # Итоговые пути на Pages:
+      #   /               → docs/specimen.html (переименован в index.html)
+      #   /dist/*.ttf     → dist/ из сборки
+      #   /dist/*.woff2   → dist/ из сборки
+      - name: Assemble site
+        run: |
+          mkdir -p _site/dist
+          cp dist/astropan-mono.ttf   _site/dist/
+          cp dist/astropan-mono.woff2 _site/dist/
+          cp docs/specimen.html       _site/index.html
+          # Копируем остальные файлы из docs/ если появятся (css, js, etc.)
+          find docs/ -maxdepth 1 -type f ! -name 'specimen.html' \
+            -exec cp {} _site/ \; 2>/dev/null || true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
