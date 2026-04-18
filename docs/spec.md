@@ -120,6 +120,9 @@
 ### 5.1. Файловая структура
 ```
 astropan-mono/
+├── .github/                 # Infrastructure & CI/CD
+│   └── workflows/
+│       └── deploy.yml
 ├── src/
 │   ├── config.toml          # Параметры шрифта (имя, версия, метрики)
 │   ├── glyphs/              # Исходные глифы
