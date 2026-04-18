@@ -1,45 +1,895 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroPan Mono — Specimen</title>
+
+    <!-- opentype.js: читаем метрики прямо из TTF в браузере -->
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js/dist/opentype.min.js"></script>
+
     <style>
+        /* ── Темы ────────────────────────────────────────────────────── */
+        :root, [data-theme="light"] {
+            --bg:           #f8f8f6;
+            --bg-card:      #ffffff;
+            --bg-muted:     #f1f0ed;
+            --border:       #e0dfd9;
+            --text:         #1a1a18;
+            --text-muted:   #6b6b65;
+            --text-subtle:  #a0a09a;
+            --accent:       #4a46b8;
+            --accent-light: #eeedf9;
+            --warn:         #b85a10;
+            --warn-light:   #fdf0e6;
+            --ok:           #1a7a4a;
+            --ok-light:     #e8f5ee;
+            /* canvas colors (используются в JS) */
+            --c-glyph:      #1a1a18;
+            --c-baseline:   #b85a10;
+            --c-ascender:   #4a46b8;
+            --c-metric:     #1a7a4a;
+            --c-bearing:    #a0a09a;
+        }
+        [data-theme="dark"] {
+            --bg:           #1a1a18;
+            --bg-card:      #242422;
+            --bg-muted:     #2c2c2a;
+            --border:       #3a3a36;
+            --text:         #e8e8e2;
+            --text-muted:   #9a9a92;
+            --text-subtle:  #5a5a54;
+            --accent:       #8884e0;
+            --accent-light: #2a2855;
+            --warn:         #e8905a;
+            --warn-light:   #3a2010;
+            --ok:           #4ab878;
+            --ok-light:     #0e2e1a;
+            --c-glyph:      #e8e8e2;
+            --c-baseline:   #e8905a;
+            --c-ascender:   #8884e0;
+            --c-metric:     #4ab878;
+            --c-bearing:    #5a5a54;
+        }
+
+        /* ── Сброс и база ─────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --font-ui:    "JetBrains Mono", "Fira Mono", monospace;
+            --font-glyph: 'AstroPan Mono', monospace;
+        }
+
         @font-face {
             font-family: 'AstroPan Mono';
-            /*src: url('/dist/astropan-mono.woff2') format('woff2');*/
             src: url('/dist/astropan-mono.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
             font-display: block;
         }
-        .test-grid {
-            font-family: 'AstroPan Mono';
-            font-size: 10px;
-            line-height: 1;
-            /* Варианты сглаживания для сравнения */
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 960px;
+            margin: 0 auto;
+            transition: background 0.15s, color 0.15s;
         }
-        .label {
-            font-family: "JetBrains Mono", sans-serif; /* Обычный текст для описания */
-            font-size: 10px;
-            line-height: 1;
-            margin-left: 10px;
+
+        /* ── Шапка ────────────────────────────────────────────────── */
+        .site-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
         }
-        .smooth { -webkit-font-smoothing: antialiased; }
-        .pixel { -webkit-font-smoothing: none; } /* Грубый рендеринг без сглаживания */
+        .site-header h1 {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .site-header .meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ── Панель управления ────────────────────────────────────── */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 2rem;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 2rem;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .control-group label {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .btn-group { display: flex; gap: 2px; }
+        .btn {
+            font-family: var(--font-ui);
+            font-size: 11px;
+            padding: 3px 9px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background 0.1s, color 0.1s, border-color 0.1s;
+            line-height: 1.4;
+        }
+        .btn:hover { background: var(--bg-muted); color: var(--text); }
+        .btn.active {
+            background: var(--accent-light);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        select {
+            font-family: var(--font-ui);
+            font-size: 11px;
+            padding: 3px 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* ── Секции ───────────────────────────────────────────────── */
+        .section { margin-bottom: 2.5rem; }
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-subtle);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── Сетка глифов ─────────────────────────────────────────── */
+        .glyph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 2px;
+        }
+        .glyph-cell {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 4px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.1s;
+        }
+        .glyph-cell:hover { border-color: var(--accent); }
+        .glyph-cell.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+        .glyph-cell.missing {
+            background: var(--bg-muted);
+            border-style: dashed;
+            cursor: default;
+        }
+        .glyph-symbol {
+            font-family: var(--font-glyph);
+            display: block;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .glyph-cell.missing .glyph-symbol {
+            width: 1em;
+            height: 1em;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0 auto 6px;
+            display: block;
+        }
+        .glyph-name {
+            font-size: 9px;
+            color: var(--text-muted);
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .glyph-code {
+            font-size: 9px;
+            color: var(--text-subtle);
+            display: block;
+        }
+
+        /* ── Строчный тест ────────────────────────────────────────── */
+        .inline-test-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .inline-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .inline-row:last-child { border-bottom: none; }
+        .inline-row-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            min-width: 170px;
+            border-right: 1px solid var(--border);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .inline-row-content {
+            font-family: var(--font-glyph);
+            padding: 8px 16px;
+            line-height: 1;
+            letter-spacing: 0.1em;
+        }
+
+        /* ── Coexistence ─────────────────────────────────────────── */
+        .coexist-row {
+            font-size: 14px;
+            line-height: 1.8;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .jb { font-family: "JetBrains Mono", monospace; }
+        .ap { font-family: var(--font-glyph); }
+
+        /* ── Badges ───────────────────────────────────────────────── */
+        .badge {
+            display: inline-block;
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+        .badge-todo { background: var(--bg-muted);   color: var(--text-subtle); }
+        .badge-wip  { background: var(--warn-light); color: var(--warn); }
+        .badge-done { background: var(--ok-light);   color: var(--ok); }
+
+        /* ── Glyph Inspector ──────────────────────────────────────── */
+        .inspector-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .inspector-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 10px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+        .inspector-toolbar strong { color: var(--text); }
+        .inspector-canvas-wrap {
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            background: var(--bg-card);
+        }
+        #inspector-canvas {
+            display: block;
+            max-width: 100%;
+        }
+        .inspector-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.5rem;
+            padding: 8px 12px;
+            border-top: 1px solid var(--border);
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-dot  { width: 8px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+
+        /* ── Smoothing ───────────────────────────────────────────── */
+        .aa-antialiased { -webkit-font-smoothing: antialiased; }
+        .aa-subpixel    { -webkit-font-smoothing: subpixel-antialiased; }
+        .aa-none        { -webkit-font-smoothing: none; }
     </style>
 </head>
 <body>
-    <!-- &#xe000; — это код test_glyph -->
-    <div>
-        <span class="test-grid smooth">&#xe000; </span>
-        <span class="label">(Сглаженный 10px)</span>
+
+<!-- Шапка -->
+<header class="site-header">
+    <h1>AstroPan Mono <span style="font-weight:400;color:var(--text-muted)">— Type Specimen</span></h1>
+    <span class="meta" id="font-version">loading font…</span>
+</header>
+
+<!-- Панель управления -->
+<div class="controls">
+    <div class="control-group">
+        <label>Size</label>
+        <div class="btn-group" id="size-btns">
+            <button class="btn active" data-size="10">10</button>
+            <button class="btn" data-size="12">12</button>
+            <button class="btn" data-size="14">14</button>
+            <button class="btn" data-size="16">16</button>
+            <button class="btn" data-size="24">24</button>
+            <button class="btn" data-size="48">48</button>
+        </div>
     </div>
-    <div>
-        <span class="test-grid pixel">&#xe000; </span>
-        <span class="label">(Без сглаживания 10px)</span>
+    <div class="control-group">
+        <label>Smoothing</label>
+        <select id="smoothing-select">
+            <option value="aa-antialiased">antialiased</option>
+            <option value="aa-subpixel">subpixel</option>
+            <option value="aa-none">none (pixel)</option>
+        </select>
     </div>
-    <div>
-        <span style="font-size: 100px;" class="test-grid">&#xe000; </span>
-        <span class="label">(Для проверки формы)</span>
+    <div class="control-group" style="margin-left:auto;">
+        <label>Theme</label>
+        <div class="btn-group">
+            <button class="btn active" id="btn-light" onclick="setTheme('light')">Light</button>
+            <button class="btn"        id="btn-dark"  onclick="setTheme('dark')">Dark</button>
+        </div>
     </div>
+    <div class="control-group" style="margin-left:auto;">
+        <label>
+            <span class="badge badge-done">done</span> drawn &nbsp;
+            <span class="badge badge-wip">wip</span> in progress &nbsp;
+            <span class="badge badge-todo">todo</span> missing
+        </label>
+    </div>
+</div>
+
+<!-- Zodiac -->
+<section class="section">
+    <div class="section-title">Zodiac signs <span class="badge badge-todo" id="cnt-zodiac"></span></div>
+    <div class="glyph-grid" id="grid-zodiac"></div>
+</section>
+
+<!-- Planets -->
+<section class="section">
+    <div class="section-title">Planets <span class="badge badge-todo" id="cnt-planets"></span></div>
+    <div class="glyph-grid" id="grid-planets"></div>
+</section>
+
+<!-- Aspects -->
+<section class="section">
+    <div class="section-title">Aspects <span class="badge badge-todo" id="cnt-aspects"></span></div>
+    <div class="glyph-grid" id="grid-aspects"></div>
+</section>
+
+<!-- Houses -->
+<section class="section">
+    <div class="section-title">Houses (PUA U+E001–E00C) <span class="badge badge-todo" id="cnt-houses"></span></div>
+    <div class="glyph-grid" id="grid-houses"></div>
+</section>
+
+<!-- Test glyph -->
+<section class="section">
+    <div class="section-title">Test glyph (PUA U+E000) <span class="badge badge-wip">wip</span></div>
+    <div class="glyph-grid" id="grid-test"></div>
+</section>
+
+<!-- Size comparison -->
+<section class="section">
+    <div class="section-title">Size comparison</div>
+    <div class="inline-test-wrap" id="size-comparison"></div>
+</section>
+
+<!-- Smoothing comparison -->
+<section class="section">
+    <div class="section-title">Smoothing comparison — 10 px</div>
+    <div class="inline-test-wrap">
+        <div class="inline-row">
+            <div class="inline-row-label">antialiased</div>
+            <div class="inline-row-content aa-antialiased" id="sc-aa" style="font-size:10px"></div>
+        </div>
+        <div class="inline-row">
+            <div class="inline-row-label">subpixel-antialiased</div>
+            <div class="inline-row-content aa-subpixel" id="sc-sub" style="font-size:10px"></div>
+        </div>
+        <div class="inline-row">
+            <div class="inline-row-label">none (pixel grid)</div>
+            <div class="inline-row-content aa-none" id="sc-none" style="font-size:10px"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Coexistence -->
+<section class="section">
+    <div class="section-title">Coexistence with JetBrains Mono — 14 px</div>
+    <div class="coexist-row" id="coexist-row"></div>
+</section>
+
+<!-- Glyph Inspector -->
+<section class="section">
+    <div class="section-title">Glyph inspector — click any glyph above to inspect</div>
+    <div class="inspector-wrap">
+        <div class="inspector-toolbar" id="inspector-toolbar">
+            <span>Select a drawn glyph to inspect</span>
+        </div>
+        <div class="inspector-canvas-wrap">
+            <canvas id="inspector-canvas" width="600" height="300"></canvas>
+        </div>
+        <div class="inspector-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#b85a10"></div>baseline</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
+        </div>
+    </div>
+</section>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   Данные глифов
+══════════════════════════════════════════════════════════════════════ */
+const GROUPS = {
+    zodiac: [
+        { name:'aries',       code:0x2648, label:'Aries' },
+        { name:'taurus',      code:0x2649, label:'Taurus' },
+        { name:'gemini',      code:0x264A, label:'Gemini' },
+        { name:'cancer',      code:0x264B, label:'Cancer' },
+        { name:'leo',         code:0x264C, label:'Leo' },
+        { name:'virgo',       code:0x264D, label:'Virgo' },
+        { name:'libra',       code:0x264E, label:'Libra' },
+        { name:'scorpio',     code:0x264F, label:'Scorpio' },
+        { name:'sagittarius', code:0x2650, label:'Sagittarius' },
+        { name:'capricorn',   code:0x2651, label:'Capricorn' },
+        { name:'aquarius',    code:0x2652, label:'Aquarius' },
+        { name:'pisces',      code:0x2653, label:'Pisces' },
+    ],
+    planets: [
+        { name:'sun',     code:0x2609, label:'Sun' },
+        { name:'moon',    code:0x263D, label:'Moon' },
+        { name:'mercury', code:0x263F, label:'Mercury' },
+        { name:'venus',   code:0x2640, label:'Venus' },
+        { name:'mars',    code:0x2642, label:'Mars' },
+        { name:'jupiter', code:0x2643, label:'Jupiter' },
+        { name:'saturn',  code:0x2644, label:'Saturn' },
+        { name:'uranus',  code:0x2645, label:'Uranus' },
+        { name:'neptune', code:0x2646, label:'Neptune' },
+        { name:'pluto',   code:0x2647, label:'Pluto' },
+    ],
+    aspects: [
+        { name:'conjunction', code:0x260C, label:'Conjunction' },
+        { name:'sextile',     code:0x2736, label:'Sextile' },
+        { name:'square',      code:0x25A1, label:'Square' },
+        { name:'trine',       code:0x25B3, label:'Trine' },
+        { name:'opposition',  code:0x260D, label:'Opposition' },
+    ],
+    houses: [
+        { name:'house_1',  code:0xE001, label:'House I' },
+        { name:'house_2',  code:0xE002, label:'House II' },
+        { name:'house_3',  code:0xE003, label:'House III' },
+        { name:'house_4',  code:0xE004, label:'House IV' },
+        { name:'house_5',  code:0xE005, label:'House V' },
+        { name:'house_6',  code:0xE006, label:'House VI' },
+        { name:'house_7',  code:0xE007, label:'House VII' },
+        { name:'house_8',  code:0xE008, label:'House VIII' },
+        { name:'house_9',  code:0xE009, label:'House IX' },
+        { name:'house_10', code:0xE00A, label:'House X' },
+        { name:'house_11', code:0xE00B, label:'House XI' },
+        { name:'house_12', code:0xE00C, label:'House XII' },
+    ],
+    test: [
+        { name:'test_glyph', code:0xE000, label:'Test glyph' },
+    ],
+};
+
+/* Обновлять по мере отрисовки глифов */
+const DONE = new Set(['test_glyph']);
+const WIP  = new Set([]);
+
+/* ══════════════════════════════════════════════════════════════════════
+   Состояние
+══════════════════════════════════════════════════════════════════════ */
+let currentSize = 10;
+let currentAA   = 'aa-antialiased';
+let otFont      = null;   /* объект opentype.Font после загрузки */
+let activeGlyph = null;   /* текущий выбранный глиф { name, code, label } */
+
+/* Метрики — дефолты, перезапишутся из TTF */
+let FM = { upm:1000, ascender:800, descender:-200, capHeight:730, xHeight:550, version:'—' };
+
+/* ══════════════════════════════════════════════════════════════════════
+   Загрузка шрифта через opentype.js
+══════════════════════════════════════════════════════════════════════ */
+const FONT_URL = '/dist/astropan-mono.ttf';
+
+async function loadFont() {
+    const meta = document.getElementById('font-version');
+    try {
+        const res  = await fetch(FONT_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const buf  = await res.arrayBuffer();
+        otFont     = opentype.parse(buf);
+
+        const os2  = otFont.tables.os2;
+        const head = otFont.tables.head;
+        const name = otFont.tables.name;
+
+        FM.upm       = head.unitsPerEm;
+        FM.ascender  = os2.sTypoAscender;
+        FM.descender = os2.sTypoDescender;
+        FM.capHeight = os2.sCapHeight || FM.capHeight;
+        FM.xHeight   = os2.sxHeight   || FM.xHeight;
+
+        /* name таблица: ищем version string (nameID 5) */
+        const nameRecords = name.records;
+        const verRecord   = nameRecords && nameRecords[5];
+        if (verRecord) {
+            /* может быть объектом { en: '...', ... } или строкой */
+            FM.version = typeof verRecord === 'string'
+                ? verRecord
+                : (verRecord.en || verRecord[Object.keys(verRecord)[0]] || head.fontRevision.toFixed(3));
+        } else {
+            FM.version = head.fontRevision.toFixed(3);
+        }
+
+        meta.textContent =
+            `v${FM.version} · UPM ${FM.upm} · asc ${FM.ascender} · desc ${FM.descender} · cap ${FM.capHeight} · x ${FM.xHeight}`;
+
+        /* Автоматически инспектируем первый готовый глиф */
+        const firstDone = Object.values(GROUPS).flat().find(g => DONE.has(g.name));
+        if (firstDone) inspectGlyph(firstDone);
+
+    } catch (err) {
+        meta.textContent = `metrics: using defaults (${err.message})`;
+        drawInspectorPlaceholder();
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Glyph Inspector — рендер на canvas
+══════════════════════════════════════════════════════════════════════ */
+function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function inspectGlyph(glyphData) {
+    if (!otFont) return;
+    activeGlyph = glyphData;
+
+    /* Подсвечиваем активную ячейку */
+    document.querySelectorAll('.glyph-cell').forEach(el => el.classList.remove('active'));
+    const activeCell = document.querySelector(`[data-name="${glyphData.name}"]`);
+    if (activeCell) activeCell.classList.add('active');
+
+    /* Тулбар */
+    const hex = glyphData.code.toString(16).toUpperCase().padStart(4, '0');
+    document.getElementById('inspector-toolbar').innerHTML =
+        `<strong>${glyphData.label}</strong>` +
+        `<span>U+${hex}</span>` +
+        `<span>advance width: <strong id="insp-aw">—</strong> upm</span>` +
+        `<span>LSB: <strong id="insp-lsb">—</strong></span>` +
+        `<span>RSB: <strong id="insp-rsb">—</strong></span>`;
+
+    drawInspector(glyphData.code);
+}
+
+function drawInspector(codepoint) {
+    const canvas  = document.getElementById('inspector-canvas');
+    const ctx     = canvas.getContext('2d');
+    const dpr     = window.devicePixelRatio || 1;
+
+    /* Размер canvas под контейнер */
+    const wrap    = canvas.parentElement;
+    const cssW    = Math.min(wrap.clientWidth - 32, 700);
+    const fontSize = Math.round(cssW * 0.35); /* глиф занимает ~35% ширины */
+
+    /* Вертикальный размер = em square */
+    const emPx   = fontSize;
+    const ascPx  = (FM.ascender  / FM.upm) * emPx;
+    const descPx = (-FM.descender / FM.upm) * emPx;
+    const cssH   = Math.ceil(ascPx + descPx + 40); /* +40 padding */
+
+    canvas.style.width  = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    canvas.width  = cssW * dpr;
+    canvas.height = cssH * dpr;
+    ctx.scale(dpr, dpr);
+
+    /* Цвета из CSS-переменных (адаптируются к теме) */
+    const C = {
+        bg:       cssVar('--bg-card'),
+        glyph:    cssVar('--c-glyph'),
+        baseline: cssVar('--c-baseline'),
+        ascender: cssVar('--c-ascender'),
+        metric:   cssVar('--c-metric'),
+        bearing:  cssVar('--c-bearing'),
+        text:     cssVar('--text-muted'),
+    };
+
+    ctx.clearRect(0, 0, cssW, cssH);
+    ctx.fillStyle = C.bg;
+    ctx.fillRect(0, 0, cssW, cssH);
+
+    /* Позиция baseline на canvas (с отступом сверху) */
+    const PAD  = 20;
+    const baseY = PAD + ascPx;
+    /* Горизонтальный центр — с учётом advance width */
+    const glyph = otFont.charToGlyph(String.fromCodePoint(codepoint));
+    const aw    = glyph.advanceWidth || FM.upm;
+    const scale = fontSize / FM.upm;
+    const glyphW = aw * scale;
+    const startX = (cssW - glyphW) / 2;
+
+    /* Обновляем метрики в тулбаре */
+    const bb = glyph.getBoundingBox();
+    const lsb = bb.x1;
+    const rsb = aw - bb.x2;
+    const awEl  = document.getElementById('insp-aw');
+    const lsbEl = document.getElementById('insp-lsb');
+    const rsbEl = document.getElementById('insp-rsb');
+    if (awEl)  awEl.textContent  = aw;
+    if (lsbEl) lsbEl.textContent = Math.round(lsb);
+    if (rsbEl) rsbEl.textContent = Math.round(rsb);
+
+    /* ── Вспомогательная функция: горизонтальная линия с подписью ── */
+    function hLine(y, color, label, upmVal, dashed) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 1;
+        ctx.globalAlpha = dashed ? 0.4 : 0.65;
+        if (dashed) {
+            ctx.setLineDash([4, 4]);
+        }
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cssW, y);
+        ctx.stroke();
+        ctx.restore();
+
+        /* Подпись */
+        ctx.save();
+        ctx.fillStyle   = color;
+        ctx.globalAlpha = dashed ? 0.6 : 0.85;
+        ctx.font        = `10px ${cssVar('--font-ui')}`;
+        ctx.textAlign   = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`${label} ${upmVal}`, cssW - 6, y - 2);
+        ctx.restore();
+    }
+
+    /* ── Вертикальные линии: bearing и advance width ── */
+    function vLine(x, color, label) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 1;
+        ctx.globalAlpha = 0.4;
+        ctx.setLineDash([3, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, cssH);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        ctx.fillStyle    = color;
+        ctx.globalAlpha  = 0.7;
+        ctx.font         = `9px ${cssVar('--font-ui')}`;
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(label, x, 4);
+        ctx.restore();
+    }
+
+    /* ── Горизонтальные метрические линии ── */
+    hLine(PAD + (FM.ascender  - FM.ascender)  / FM.upm * emPx, C.ascender, 'ascender',  FM.ascender,  false);
+    hLine(PAD + (FM.ascender  - FM.capHeight) / FM.upm * emPx, C.metric,   'cap height', FM.capHeight, true);
+    hLine(PAD + (FM.ascender  - FM.xHeight)   / FM.upm * emPx, C.metric,   'x-height',  FM.xHeight,   true);
+    hLine(baseY,                                                 C.baseline, 'baseline',  0,            false);
+    hLine(PAD + (FM.ascender  - FM.descender) / FM.upm * emPx, C.ascender, 'descender', FM.descender, false);
+
+    /* ── Вертикальные линии: LSB, RSB, advance width ── */
+    vLine(startX,              C.bearing, 'LSB');
+    vLine(startX + glyphW,     C.bearing, 'RSB / adv');
+
+    /* ── Сам глиф ── */
+    ctx.save();
+    ctx.fillStyle = C.glyph;
+    const path = glyph.getPath(startX, baseY, fontSize);
+    path.fill   = C.glyph;
+    path.draw(ctx);
+    ctx.restore();
+}
+
+function drawInspectorPlaceholder() {
+    const canvas = document.getElementById('inspector-canvas');
+    const ctx    = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle    = cssVar('--text-subtle');
+    ctx.font         = `11px ${cssVar('--font-ui') || 'monospace'}`;
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Font file not available — inspector disabled', canvas.width / 2, canvas.height / 2);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Тема
+══════════════════════════════════════════════════════════════════════ */
+function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('btn-light').classList.toggle('active', t === 'light');
+    document.getElementById('btn-dark').classList.toggle('active',  t === 'dark');
+    /* Перерисовываем canvas — цвета изменились */
+    if (activeGlyph && otFont) drawInspector(activeGlyph.code);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Сетка глифов
+══════════════════════════════════════════════════════════════════════ */
+const cp = code => String.fromCodePoint(code);
+
+function statusOf(name) {
+    if (DONE.has(name)) return 'done';
+    if (WIP.has(name))  return 'wip';
+    return 'todo';
+}
+
+function doneStr() {
+    const d = Object.values(GROUPS).flat().filter(g => statusOf(g.name) !== 'todo');
+    return d.length ? d.map(g => cp(g.code)).join('') : cp(0xE000);
+}
+
+function renderCell(g) {
+    const st      = statusOf(g.name);
+    const missing = st === 'todo';
+    const hex     = g.code.toString(16).toUpperCase().padStart(4, '0');
+    const div     = document.createElement('div');
+    div.className = 'glyph-cell' + (missing ? ' missing' : '');
+    div.dataset.name = g.name;
+    div.title = `${g.label} · U+${hex}`;
+
+    if (missing) {
+        div.innerHTML =
+            `<span class="glyph-symbol"></span>` +
+            `<span class="glyph-name">${g.label}</span>` +
+            `<span class="glyph-code">U+${hex}</span>`;
+    } else {
+        div.innerHTML =
+            `<span class="glyph-symbol ${currentAA}" style="font-size:${currentSize}px">${cp(g.code)}</span>` +
+            `<span class="badge badge-${st}">${st}</span>` +
+            `<span class="glyph-name">${g.label}</span>` +
+            `<span class="glyph-code">U+${hex}</span>`;
+        /* Клик → инспектор */
+        div.addEventListener('click', () => inspectGlyph(g));
+    }
+    return div;
+}
+
+function fillGrid(id, arr) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    arr.forEach(g => el.appendChild(renderCell(g)));
+}
+
+function refreshGrids() {
+    Object.entries(GROUPS).forEach(([key, arr]) => fillGrid('grid-' + key, arr));
+    ['zodiac','planets','aspects','houses'].forEach(key => {
+        const el = document.getElementById('cnt-' + key);
+        if (!el) return;
+        const arr  = GROUPS[key];
+        const done = arr.filter(g => statusOf(g.name) !== 'todo').length;
+        el.textContent = `${done} / ${arr.length}`;
+        el.className = 'badge ' + (done === arr.length ? 'badge-done' : done > 0 ? 'badge-wip' : 'badge-todo');
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Size comparison
+══════════════════════════════════════════════════════════════════════ */
+function buildSizeComparison() {
+    const wrap = document.getElementById('size-comparison');
+    wrap.innerHTML = '';
+    const str = doneStr();
+    [10, 12, 14, 16, 24, 48].forEach(sz => {
+        const row = document.createElement('div');
+        row.className = 'inline-row';
+        row.innerHTML =
+            `<div class="inline-row-label">${sz} px</div>` +
+            `<div class="inline-row-content ${currentAA}" style="font-size:${sz}px">${str}</div>`;
+        wrap.appendChild(row);
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Smoothing comparison (фиксированные 10px, три режима)
+══════════════════════════════════════════════════════════════════════ */
+function buildSmoothingComparison() {
+    const str = doneStr();
+    document.getElementById('sc-aa').textContent   = str;
+    document.getElementById('sc-sub').textContent  = str;
+    document.getElementById('sc-none').textContent = str;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Coexistence row
+══════════════════════════════════════════════════════════════════════ */
+function buildCoexistRow() {
+    const g = doneStr();
+    document.getElementById('coexist-row').innerHTML =
+        `<span class="jb">Sun </span><span class="ap">${g}</span>` +
+        `<span class="jb"> in Aries &mdash; natal chart excerpt &mdash; </span>` +
+        `<span class="ap">${g}</span><span class="jb"> ☌ </span><span class="ap">${g}</span>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Обновление при смене размера / сглаживания
+══════════════════════════════════════════════════════════════════════ */
+function applySettings() {
+    document.querySelectorAll('.glyph-symbol:not(.missing .glyph-symbol)').forEach(el => {
+        el.className      = `glyph-symbol ${currentAA}`;
+        el.style.fontSize = currentSize + 'px';
+    });
+    buildSizeComparison();
+    buildSmoothingComparison();
+    buildCoexistRow();
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   События
+══════════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('#size-btns .btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('#size-btns .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSize = parseInt(btn.dataset.size, 10);
+        applySettings();
+    });
+});
+
+document.getElementById('smoothing-select').addEventListener('change', e => {
+    currentAA = e.target.value;
+    applySettings();
+});
+
+/* Перерисовка при ресайзе окна */
+window.addEventListener('resize', () => {
+    if (activeGlyph && otFont) drawInspector(activeGlyph.code);
+});
+
+/* ══════════════════════════════════════════════════════════════════════
+   Init
+══════════════════════════════════════════════════════════════════════ */
+refreshGrids();
+buildSizeComparison();
+buildSmoothingComparison();
+buildCoexistRow();
+drawInspectorPlaceholder();
+
+if (typeof opentype !== 'undefined') {
+    loadFont();
+} else {
+    document.getElementById('font-version').textContent = 'opentype.js not loaded';
+    drawInspectorPlaceholder();
+}
+</script>
 </body>
 </html>
