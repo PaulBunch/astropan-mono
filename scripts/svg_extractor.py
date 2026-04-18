@@ -8,15 +8,24 @@ from pathlib import Path
 # Регистрируем пространство имен
 ET.register_namespace("", "http://www.w3.org/2000/svg")
 
+# Маппинг заголовков в префиксы
+PREFIX_MAP = {
+    'signs':   's',
+    'planets': 'p',
+    'aspects': 'a'
+}
 
-def get_unique_name(name_registry, raw_name):
-    """Очищает имя и гарантирует уникальность."""
-    # Оставляем только буквы и цифры, приводим к нижнему регистру
+
+def get_unique_name(name_registry, raw_name, prefix=""):
+    """Очищает имя, добавляет префикс и гарантирует уникальность."""
     clean_name = re.sub(r'[^a-zA-Z0-9]', '_', raw_name).strip('_').lower()
     if not clean_name:
         clean_name = "glyph"
 
-    # Проверка на дубликаты
+    # Добавляем префикс, если он есть и имя еще не начинается с него
+    if prefix and not clean_name.startswith(f"{prefix}_"):
+        clean_name = f"{prefix}_{clean_name}"
+
     if clean_name not in name_registry:
         name_registry[clean_name] = 1
         return clean_name
@@ -25,22 +34,36 @@ def get_unique_name(name_registry, raw_name):
         return f"{clean_name}_{name_registry[clean_name]}"
 
 
+def extract_name(root, index, name_registry, current_prefix):
+    """Извлекает имя на основе списка приоритетных атрибутов."""
+    # 1. Жестко заданное имя (идеальный сценарий)
+    if root.get('data-name'):
+        return get_unique_name(name_registry, root.get('data-name'), current_prefix)
+
+    # 2. Пытаемся вытащить из ID или data-test-id
+    fallback_id = root.get('id') or root.get('data-test-id')
+    if fallback_id:
+        potential_name = re.search(r'([A-Z][a-z]+)', fallback_id)
+        name_base = potential_name.group(1) if potential_name else fallback_id.split('-')[-1]
+        return get_unique_name(name_registry, name_base, current_prefix)
+
+    # 3. Полный fallback
+    return get_unique_name(name_registry, f"glyph_{index}", current_prefix)
+
 def clean_element(element):
     """Очищает атрибуты, сохраняя критически важные для формы."""
     # Атрибуты, влияющие на геометрию и логику отрисовки
     geometry_attrs = {
         'd', 'viewBox', 'xmlns', 'fill-rule', 'clip-rule',
-        'cx', 'cy', 'r', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'transform'
+        'cx', 'cy', 'r', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'transform', 'data-name'
     }
-
-    # Очистка корневого элемента
     for attr in list(element.attrib):
         if attr not in geometry_attrs:
             del element.attrib[attr]
 
 
-def process_svg(name_registry, svg_string, index):
-    """Парсит, масштабирует с сохранением пропорций и центрирует в 1000x1000."""
+def process_svg(name_registry, svg_string, index, current_prefix):
+    """Парсит и нормализует SVG-иконки из веб-источников."""
     try:
         root = ET.fromstring(svg_string)
     except ET.ParseError as e:
@@ -48,17 +71,12 @@ def process_svg(name_registry, svg_string, index):
         return None
 
     # 1. Извлечение имени
-    raw_id = root.get('id') or root.get('data-test-id') or f"glyph_{index}"
-    # Пытаемся вытащить осмысленную часть из длинных ID (напр. Taurus)
-    potential_name = re.search(r'([A-Z][a-z]+)', raw_id)
-    name_base = potential_name.group(1) if potential_name else raw_id.split('-')[-1]
-    final_name = get_unique_name(name_registry, name_base)
+    final_name = extract_name(root, index, name_registry, current_prefix)
 
     # 2. Масштабирование без смещения (Preserve Positioning)
     viewbox = root.get('viewBox', '0 0 24 24').split()
     try:
-        orig_w = float(viewbox[2])
-        orig_h = float(viewbox[3])
+        orig_w, orig_h = float(viewbox[2]), float(viewbox[3])
     except (IndexError, ValueError):
         orig_w, orig_h = 24, 24
 
@@ -67,6 +85,7 @@ def process_svg(name_registry, svg_string, index):
 
     # 3. Создаем группу с заливкой и масштабом
     wrapper = ET.Element('g', {
+        'id': 'glyph',
         'transform': f'scale({scale:.4f})',
         'fill': 'black',
         'fill-opacity': '0.2'
@@ -75,7 +94,7 @@ def process_svg(name_registry, svg_string, index):
     for child in list(root):
         root.remove(child)
         wrapper.append(child)
-        clean_element(child) # Чистим детей
+        clean_element(child)
     root.append(wrapper)
 
     # 4. Финализация корня
@@ -83,6 +102,27 @@ def process_svg(name_registry, svg_string, index):
     clean_element(root)
 
     return final_name, ET.tostring(root, encoding='unicode')
+
+
+def parse_content(content):
+    """Разбивает текст на блоки, отслеживая заголовки Markdown."""
+    blocks = []
+    current_prefix = ""
+
+    # Разбиваем текст по тегам SVG, сохраняя все что между ними
+    parts = re.split(r'(<svg.*?</svg>)', content, flags=re.DOTALL)
+
+    for part in parts:
+        if part.startswith('<svg'):
+            blocks.append((part, current_prefix))
+        else:
+            # Ищем заголовок в текстовой части между SVG
+            match = re.search(r'###\s+(.+)', part)
+            if match:
+                header = match.group(1).strip().lower()
+                current_prefix = PREFIX_MAP.get(header, "")
+
+    return blocks
 
 
 def main():
@@ -100,21 +140,18 @@ def main():
         sys.exit(1)
 
     content = input_path.read_text()
-
-    # Регулярка для поиска всех <svg ... </svg> (включая многострочные)
-    svg_blocks = re.findall(r'<svg.*?</svg>', content, re.DOTALL)
+    svg_blocks = parse_content(content)
 
     print(f"Found {len(svg_blocks)} SVG blocks. Processing...")
-
     name_registry = {}
 
-    for i, svg_str in enumerate(svg_blocks, 1):
-        result = process_svg(name_registry, svg_str, i)
+    for i, (svg_str, prefix) in enumerate(svg_blocks, 1):
+        result = process_svg(name_registry, svg_str, i, prefix)
         if result:
             name, clean_content = result
             file_path = output_dir / f"{name}.svg"
             file_path.write_text('<?xml version="1.0" encoding="UTF-8"?>\n' + clean_content)
-            print(f"  [OK] {file_path}")
+            print(f"  [OK] {file_path.name}")
 
 
 if __name__ == "__main__":
