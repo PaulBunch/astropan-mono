@@ -128,7 +128,7 @@ def parse_content(content):
 def main():
     parser = argparse.ArgumentParser(description="SVG Reference Extractor")
     parser.add_argument("input", help="Path to input file")
-    parser.add_argument("-o", "--output", default="src/reference", help="Output directory")
+    parser.add_argument("-o", "--output", default="src/references", help="Output directory")
     args = parser.parse_args()
 
     input_path = Path(args.input)
