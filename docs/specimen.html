@@ -229,7 +229,7 @@
         }
         .inline-row {
             display: flex;
-            align-items: center;
+            align-items: stretch;
             border-bottom: 1px solid var(--border);
         }
         .inline-row:last-child { border-bottom: none; }
@@ -241,25 +241,26 @@
             border-right: 1px solid var(--border);
             white-space: nowrap;
             flex-shrink: 0;
+            /* Центрируем текст внутри растянутого лейбла */
+            display: flex;
+            align-items: center;
         }
         .inline-row-content {
             font-family: var(--font-glyph);
             padding: 8px 16px;
             line-height: 1;
             letter-spacing: 0.1em;
+            /* Центрируем текст внутри растянутого лейбла */
+            display: flex;
+            align-items: center;
+            /* Гарантируем отображение пробелов и переносов как в коде */
+            white-space: pre-wrap;
+            word-break: break-all;
         }
 
         /* ── Coexistence ─────────────────────────────────────────── */
-        .coexist-row {
-            font-size: 14px;
-            line-height: 1.8;
-            padding: 12px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-        .jb { font-family: "JetBrains Mono", monospace; }
-        .ap { font-family: var(--font-glyph); }
+        .jb { font-family: "JetBrains Mono", monospace; letter-spacing: 0; }
+        .ap { font-family: var(--font-glyph); letter-spacing: 0; }
 
         /* ── Badges ───────────────────────────────────────────────── */
         .badge {
@@ -422,8 +423,17 @@
 
 <!-- Coexistence -->
 <section class="section">
-    <div class="section-title">Coexistence with JetBrains Mono — 14 px</div>
-    <div class="coexist-row" id="coexist-row"></div>
+    <div class="section-title">Coexistence with JetBrains Mono</div>
+    <div class="inline-test-wrap">
+        <div class="inline-row">
+            <div class="inline-row-label">10 px (7.5 pt)</div>
+            <div class="inline-row-content" id="coexist-10" style="font-size: 10px;"></div>
+        </div>
+        <div class="inline-row">
+            <div class="inline-row-label">16 px (12 pt)</div>
+            <div class="inline-row-content" id="coexist-16" style="font-size: 16px;"></div>
+        </div>
+    </div>
 </section>
 
 <!-- Glyph Inspector -->
@@ -474,11 +484,11 @@ const GROUPS = {
         { name:'saturn',  code:0x2644, label:'Saturn' },
         { name:'uranus',  code:0x2645, label:'Uranus' },
         { name:'neptune', code:0x2646, label:'Neptune' },
-        { name:'pluto',   code:0x2647, label:'Pluto' },
+        { name:'pluto',   code:0x2BD3, label:'Pluto' },
     ],
     aspects: [
         { name:'conjunction', code:0x260C, label:'Conjunction' },
-        { name:'sextile',     code:0x2736, label:'Sextile' },
+        { name:'sextile',     code:0x26B9, label:'Sextile' },
         { name:'square',      code:0x25A1, label:'Square' },
         { name:'trine',       code:0x25B3, label:'Trine' },
         { name:'opposition',  code:0x260D, label:'Opposition' },
@@ -503,7 +513,15 @@ const GROUPS = {
 };
 
 /* Обновлять по мере отрисовки глифов */
-const DONE = new Set(['test_glyph']);
+const DONE = new Set([
+  // 'test_glyph',
+  'opposition',
+  'square',
+  'pluto',
+  'virgo',
+  'aries',
+  'saturn',
+]);
 const WIP  = new Set([]);
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -834,10 +852,14 @@ function buildSmoothingComparison() {
 ══════════════════════════════════════════════════════════════════════ */
 function buildCoexistRow() {
     const g = doneStr();
-    document.getElementById('coexist-row').innerHTML =
-        `<span class="jb">Sun </span><span class="ap">${g}</span>` +
+    const html = `<span class="jb">Sun </span><span class="ap">${g}</span>` +
         `<span class="jb"> in Aries &mdash; natal chart excerpt &mdash; </span>` +
         `<span class="ap">${g}</span><span class="jb"> ☌ </span><span class="ap">${g}</span>`;
+
+    const el10 = document.getElementById('coexist-10');
+    const el16 = document.getElementById('coexist-16');
+    if (el10) el10.innerHTML = html;
+    if (el16) el16.innerHTML = html;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
