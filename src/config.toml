@@ -19,7 +19,7 @@ fs_type      = 0
 # --- Метрики SVG‐холста ---
 
 upm                = 1000
-advance_width_base =  600
+advance_width_base =  800
 ascender_upm       =  800
 
 # --- Метрики на основе JetBrains Mono ---
@@ -76,11 +76,11 @@ jupiter     = "U+2643"
 saturn      = "U+2644"
 uranus      = "U+2645"
 neptune     = "U+2646"
-pluto       = "U+2647"
+pluto       = "U+2BD3"
 
 # Аспекты
 conjunction = "U+260C"
-sextile     = "U+2736"
+sextile     = "U+26B9"
 square      = "U+25A1"
 trine       = "U+25B3"
 opposition  = "U+260D"
@@ -105,6 +105,6 @@ house_12    = "U+E00C"
 [glyph_widths]
 # Переопределение ширины для широких глифов
 # Если не указано — используется advance_width_base
-saturn        = 900
-pluto         = 900
-mercury       = 900
+# saturn        = 900
+# pluto         = 900
+# mercury       = 900
