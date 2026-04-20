@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -17,9 +16,7 @@ def format_ff_name(filename_stem):
     """
     parts = filename_stem.split('_')
     if len(parts) >= 2:
-        # Если первая часть похожа на юникод (u + шестнадцатеричный код)
-        if re.match(r'^u[0-9a-fA-F]+$', parts[0]):
-            return f"{parts[1].lower()}_{parts[0].lower()}"
+        return f"{parts[1].lower()}_{parts[0].lower()}"
 
     # Фолбек: просто приводим к нижнему регистру
     return filename_stem.lower()
