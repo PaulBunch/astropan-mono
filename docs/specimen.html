@@ -57,7 +57,7 @@
 
         :root {
             --font-ui:    "JetBrains Mono", "Fira Mono", monospace;
-            --font-glyph: 'AstroPan Mono', monospace;
+            --font-glyph: "AstroPan Mono", "JetBrains Mono", monospace;
         }
 
         @font-face {
@@ -259,7 +259,6 @@
         }
 
         /* ── Coexistence ─────────────────────────────────────────── */
-        .jb { font-family: "JetBrains Mono", monospace; letter-spacing: 0; }
         .ap { font-family: var(--font-glyph); letter-spacing: 0; }
 
         /* ── Badges ───────────────────────────────────────────────── */
@@ -415,10 +414,19 @@
     <div class="glyph-grid" id="grid-test"></div>
 </section>
 
-<!-- Size comparison -->
+<!-- Coexistence -->
 <section class="section">
-    <div class="section-title">Size comparison</div>
-    <div class="inline-test-wrap" id="size-comparison"></div>
+    <div class="section-title">Coexistence with JetBrains Mono</div>
+    <div class="inline-test-wrap">
+        <div class="inline-row">
+            <div class="inline-row-label">10 px (7.5 pt)</div>
+            <div class="inline-row-content" id="coexist-10" style="font-size: 10px;"></div>
+        </div>
+        <div class="inline-row">
+            <div class="inline-row-label">16 px (12 pt)</div>
+            <div class="inline-row-content" id="coexist-16" style="font-size: 16px;"></div>
+        </div>
+    </div>
 </section>
 
 <!-- Smoothing comparison -->
@@ -440,19 +448,10 @@
     </div>
 </section>
 
-<!-- Coexistence -->
+<!-- Size comparison -->
 <section class="section">
-    <div class="section-title">Coexistence with JetBrains Mono</div>
-    <div class="inline-test-wrap">
-        <div class="inline-row">
-            <div class="inline-row-label">10 px (7.5 pt)</div>
-            <div class="inline-row-content" id="coexist-10" style="font-size: 10px;"></div>
-        </div>
-        <div class="inline-row">
-            <div class="inline-row-label">16 px (12 pt)</div>
-            <div class="inline-row-content" id="coexist-16" style="font-size: 16px;"></div>
-        </div>
-    </div>
+    <div class="section-title">Size comparison</div>
+    <div class="inline-test-wrap" id="size-comparison"></div>
 </section>
 
 <script>
@@ -560,6 +559,13 @@ let activeGlyph = null;   /* текущий выбранный глиф { name, 
 /* Метрики — дефолты, перезапишутся из TTF */
 let FM = { upm:1000, ascender:800, descender:-200, capHeight:730, xHeight:550, version:'—' };
 
+/* Состояние строки сравнения (Coexistence) */
+let coexistState = {
+    planet: GROUPS.planets[0], // Sun
+    aspect: GROUPS.aspects[0], // Conjunction
+    target: GROUPS.zodiac[0]   // Aries
+};
+
 /* ══════════════════════════════════════════════════════════════════════
    Загрузка шрифта через opentype.js
 ══════════════════════════════════════════════════════════════════════ */
@@ -623,6 +629,17 @@ function inspectGlyph(glyphData) {
     document.querySelectorAll('.glyph-cell').forEach(el => el.classList.remove('active'));
     const activeCell = document.querySelector(`[data-name="${glyphData.name}"]`);
     if (activeCell) activeCell.classList.add('active');
+
+    /* Обновляем состояние Coexistence, если выбранный глиф относится к одной из групп */
+    for (const [groupName, list] of Object.entries(GROUPS)) {
+        if (list.some(item => item.name === glyphData.name)) {
+            if (groupName === 'planets') coexistState.planet = glyphData;
+            else if (groupName === 'aspects') coexistState.aspect = glyphData;
+            else if (groupName === 'zodiac' || groupName === 'houses') coexistState.target = glyphData;
+            buildCoexistRow();
+            break;
+        }
+    }
 
     /* Тулбар */
     const hex = glyphData.code.toString(16).toUpperCase().padStart(4, '0');
@@ -876,10 +893,13 @@ function buildSmoothingComparison() {
    Coexistence row
 ══════════════════════════════════════════════════════════════════════ */
 function buildCoexistRow() {
-    const g = doneStr();
-    const html = `<span class="jb">Sun </span><span class="ap">${g}</span>` +
-        `<span class="jb"> in Aries &mdash; natal chart excerpt &mdash; </span>` +
-        `<span class="ap">${g}</span><span class="jb"> ☌ </span><span class="ap">${g}</span>`;
+    const p = coexistState.planet;
+    const a = coexistState.aspect;
+    const t = coexistState.target;
+
+    // Используем fallback шрифта (текст — JB Mono, глифы — AstroPan Mono)
+    const html = `<span class="ap">${p.label} ${cp(p.code)} in ${t.label} ${cp(t.code)} &mdash; ` +
+                `chart excerpt: ${cp(p.code)}${cp(a.code)}${cp(t.code)}</span>`;
 
     const el10 = document.getElementById('coexist-10');
     const el16 = document.getElementById('coexist-16');
