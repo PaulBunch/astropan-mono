@@ -329,6 +329,25 @@
     <span class="meta" id="font-version">loading font…</span>
 </header>
 
+<!-- Glyph Inspector -->
+<section class="section">
+    <div class="section-title">Glyph inspector — click any glyph above to inspect</div>
+    <div class="inspector-wrap">
+        <div class="inspector-toolbar" id="inspector-toolbar">
+            <span>Select a drawn glyph to inspect</span>
+        </div>
+        <div class="inspector-canvas-wrap">
+            <canvas id="inspector-canvas" width="600" height="300"></canvas>
+        </div>
+        <div class="inspector-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#b85a10"></div>baseline</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
+        </div>
+    </div>
+</section>
+
 <!-- Панель управления -->
 <div class="controls">
     <div class="control-group">
@@ -436,25 +455,6 @@
     </div>
 </section>
 
-<!-- Glyph Inspector -->
-<section class="section">
-    <div class="section-title">Glyph inspector — click any glyph above to inspect</div>
-    <div class="inspector-wrap">
-        <div class="inspector-toolbar" id="inspector-toolbar">
-            <span>Select a drawn glyph to inspect</span>
-        </div>
-        <div class="inspector-canvas-wrap">
-            <canvas id="inspector-canvas" width="600" height="300"></canvas>
-        </div>
-        <div class="inspector-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#b85a10"></div>baseline</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
-        </div>
-    </div>
-</section>
-
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    Данные глифов
@@ -492,6 +492,8 @@ const GROUPS = {
         { name:'square',      code:0x25A1, label:'Square' },
         { name:'trine',       code:0x25B3, label:'Trine' },
         { name:'opposition',  code:0x260D, label:'Opposition' },
+        { name:'semisextile', code:0x26BA, label:'Semisextile' },
+        { name:'quincunx',    code:0x26BB, label:'Quincunx' },
     ],
     houses: [
         { name:'house_1',  code:0xE001, label:'House I' },
@@ -514,13 +516,36 @@ const GROUPS = {
 
 /* Обновлять по мере отрисовки глифов */
 const DONE = new Set([
-  // 'test_glyph',
+  'test_glyph',
   'opposition',
   'square',
   'pluto',
   'virgo',
   'aries',
   'saturn',
+  'trine',
+  'conjunction',
+  'sextile',
+  'quincunx',
+  'semisextile',
+  'sun',
+  'moon',
+  'mercury',
+  'venus',
+  'mars',
+  'jupiter',
+  'uranus',
+  'neptune',
+  'taurus',
+  'gemini',
+  'cancer',
+  'leo',
+  'libra',
+  'scorpio',
+  'sagittarius',
+  'capricorn',
+  'aquarius',
+  'pisces',
 ]);
 const WIP  = new Set([]);
 
