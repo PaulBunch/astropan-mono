@@ -343,6 +343,9 @@
             <div class="legend-item"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
             <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
             <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
+            <div class="legend-item" style="margin-left:auto;">
+                <button class="btn" id="btn-pixel-grid" onclick="togglePixelGrid()">Pixel grid 10px</button>
+            </div>
         </div>
     </div>
 </section>
@@ -551,10 +554,11 @@ const WIP  = new Set([]);
 /* ══════════════════════════════════════════════════════════════════════
    Состояние
 ══════════════════════════════════════════════════════════════════════ */
-let currentSize = 10;
-let currentAA   = 'aa-antialiased';
-let otFont      = null;   /* объект opentype.Font после загрузки */
-let activeGlyph = null;   /* текущий выбранный глиф { name, code, label } */
+let currentSize    = 10;
+let currentAA      = 'aa-antialiased';
+let otFont         = null;   /* объект opentype.Font после загрузки */
+let activeGlyph    = null;   /* текущий выбранный глиф { name, code, label } */
+let showPixelGrid  = false;  /* пиксельная сетка в инспекторе */
 
 /* Метрики — дефолты, перезапишутся из TTF */
 let FM = { upm:1000, ascender:800, descender:-200, capHeight:730, xHeight:550, version:'—' };
@@ -778,6 +782,66 @@ function drawInspector(codepoint) {
     path.fill   = C.glyph;
     path.draw(ctx);
     ctx.restore();
+
+    /* ── Пиксельная сетка 10px (рисуется поверх глифа) ── */
+    if (showPixelGrid) {
+        /* Один пиксель при 10px = UPM/10 единиц = fontSize/10 пикселей на canvas */
+        const cellPx = fontSize / 10;
+
+        /* Зона сетки: em square = от ascender до descender, по X — вся ширина глифа */
+        const gridTop  = PAD;                                                /* y ascender */
+        const gridBot  = PAD + (FM.ascender - FM.descender) / FM.upm * emPx; /* y descender */
+        const gridLeft  = startX;
+        const gridRight = startX + glyphW;
+
+        ctx.save();
+        ctx.strokeStyle = cssVar('--accent');
+        ctx.lineWidth   = 0.5;
+        ctx.globalAlpha = 0.25;
+
+        /* Вертикальные линии сетки (привязка к gridLeft / LSB) */
+        for (let x = gridLeft; x <= gridRight + 0.5; x += cellPx) {
+            const xSnap = Math.round(x) + 0.5; /* + 0.5 чтобы линия не размывалась на canvas */
+            ctx.beginPath();
+            ctx.moveTo(xSnap, gridTop);
+            ctx.lineTo(xSnap, gridBot);
+            ctx.stroke();
+        }
+
+        /* Горизонтальные линии сетки (привязка к baseY / Baseline) */
+        // Находим самую верхнюю линию сетки, кратную шагу от baseline
+        let yStart = baseY;
+        while (yStart >= gridTop + cellPx - 0.1) yStart -= cellPx;
+
+        for (let y = yStart; y <= gridBot + 0.5; y += cellPx) {
+            const ySnap = Math.round(y) + 0.5;
+            ctx.beginPath();
+            ctx.moveTo(gridLeft,  ySnap);
+            ctx.lineTo(gridRight, ySnap);
+            ctx.stroke();
+        }
+
+        ctx.restore();
+
+        /* Подпись размера ячейки по центру сетки снизу */
+        ctx.save();
+        ctx.fillStyle    = cssVar('--accent');
+        ctx.globalAlpha  = 0.7;
+        ctx.font         = `9px ${cssVar('--font-ui')}`;
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'top';
+        // Координата X — середина между gridLeft и gridRight
+        const centerX = gridLeft + (gridRight - gridLeft) / 2;
+        ctx.fillText(`1 cell = ${Math.round(cellPx * 10) / 10} px · ${FM.upm / 10} upm`, centerX, gridBot + 4);
+        ctx.restore();
+    }
+}
+
+function togglePixelGrid() {
+    showPixelGrid = !showPixelGrid;
+    const btn = document.getElementById('btn-pixel-grid');
+    btn.classList.toggle('active', showPixelGrid);
+    if (activeGlyph && otFont) drawInspector(activeGlyph.code);
 }
 
 function drawInspectorPlaceholder() {
