@@ -330,7 +330,7 @@
 
 <!-- Glyph Inspector -->
 <section class="section">
-    <div class="section-title">Glyph inspector — click any glyph above to inspect</div>
+    <div class="section-title">Glyph inspector — click any glyph below to inspect</div>
     <div class="inspector-wrap">
         <div class="inspector-toolbar" id="inspector-toolbar">
             <span>Select a drawn glyph to inspect</span>
@@ -344,7 +344,7 @@
             <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
             <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
             <div class="legend-item" style="margin-left:auto;">
-                <button class="btn" id="btn-pixel-grid" onclick="togglePixelGrid()">Pixel grid 10px</button>
+                <button class="btn" id="btn-pixel-grid" onclick="togglePixelGrid()">Pixel grid</button>
             </div>
         </div>
     </div>
@@ -419,7 +419,7 @@
 
 <!-- Coexistence -->
 <section class="section">
-    <div class="section-title">Coexistence with JetBrains Mono</div>
+    <div class="section-title">Coexistence with JetBrains Mono — click any glyph above to compare</div>
     <div class="inline-test-wrap">
         <div class="inline-row">
             <div class="inline-row-label">10 px (7.5 pt)</div>
@@ -783,10 +783,10 @@ function drawInspector(codepoint) {
     path.draw(ctx);
     ctx.restore();
 
-    /* ── Пиксельная сетка 10px (рисуется поверх глифа) ── */
+    /* ── Пиксельная сетка (рисуется поверх глифа) ── */
     if (showPixelGrid) {
         /* Один пиксель при 10px = UPM/10 единиц = fontSize/10 пикселей на canvas */
-        const cellPx = fontSize / 10;
+        const cellPx = fontSize / currentSize;
 
         /* Зона сетки: em square = от ascender до descender, по X — вся ширина глифа */
         const gridTop  = PAD;                                                /* y ascender */
@@ -832,7 +832,7 @@ function drawInspector(codepoint) {
         ctx.textBaseline = 'top';
         // Координата X — середина между gridLeft и gridRight
         const centerX = gridLeft + (gridRight - gridLeft) / 2;
-        ctx.fillText(`1 cell = ${Math.round(cellPx * 10) / 10} px · ${FM.upm / 10} upm`, centerX, gridBot + 4);
+        ctx.fillText(`1 cell = ${Math.round(cellPx * 10) / 10} px · ${Math.round(FM.upm / currentSize)} upm`, centerX, gridBot + 4);
         ctx.restore();
     }
 }
@@ -982,6 +982,9 @@ function applySettings() {
     buildSizeComparison();
     buildSmoothingComparison();
     buildCoexistRow();
+
+    /* Перерисовываем инспектор, если выбран глиф и отображена сетка */
+    if (activeGlyph && showPixelGrid) inspectGlyph(activeGlyph);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
