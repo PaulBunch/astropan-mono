@@ -78,12 +78,16 @@ uranus      = "U+2645"
 neptune     = "U+2646"
 pluto       = "U+2BD3"
 
-# Аспекты
+# Аспекты (мажорные)
 conjunction = "U+260C"
 sextile     = "U+26B9"
 square      = "U+25A1"
 trine       = "U+25B3"
 opposition  = "U+260D"
+
+# Аспекты (минорные)
+semisextile = "U+26BA"
+quincunx    = "U+26BB"
 
 # Тестовый глиф (PUA)
 test_glyph  = "U+E000"
