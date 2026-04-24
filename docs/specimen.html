@@ -413,7 +413,7 @@
 
 <!-- Test glyph -->
 <section class="section">
-    <div class="section-title">Test glyph (PUA U+E000) <span class="badge badge-wip">wip</span></div>
+    <div class="section-title">Test glyph (PUA U+E000) <span class="badge badge-todo" id="cnt-test"></span></div>
     <div class="glyph-grid" id="grid-test"></div>
 </section>
 
@@ -548,6 +548,18 @@ const DONE = new Set([
   'capricorn',
   'aquarius',
   'pisces',
+  'house_10',
+  'house_8',
+  'house_1',
+  'house_11',
+  'house_2',
+  'house_12',
+  'house_3',
+  'house_4',
+  'house_5',
+  'house_6',
+  'house_9',
+  'house_7',
 ]);
 const WIP  = new Set([]);
 
@@ -916,7 +928,7 @@ function fillGrid(id, arr) {
 
 function refreshGrids() {
     Object.entries(GROUPS).forEach(([key, arr]) => fillGrid('grid-' + key, arr));
-    ['zodiac','planets','aspects','houses'].forEach(key => {
+    ['zodiac','planets','aspects','houses','test'].forEach(key => {
         const el = document.getElementById('cnt-' + key);
         if (!el) return;
         const arr  = GROUPS[key];
