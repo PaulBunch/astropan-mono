@@ -1,5 +1,7 @@
 # AstroPan Mono
 
+_English translation of the documentation is in progress. Currently, documents are available in Russian._
+
 **AstroPan Mono** — специализированный иконочный шрифт для астрологических интерфейсов. Разработан для обеспечения предельной чёткости на малых кеглях (от **10px**) при строгом соблюдении моноширинной сетки.
 
 Проект вдохновлен инженерными решениями **JetBrains Mono**, адаптируя их под специфику сложной астрологической графики.
