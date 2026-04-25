@@ -62,6 +62,14 @@
         :root {
             --font-ui:    "JetBrains Mono", "Fira Mono", monospace;
             --font-glyph: "AstroPan Mono", "JetBrains Mono", monospace;
+
+            --text-xs:     9px;
+            --text-sm:    10px;
+            --text-base:  12px;
+            --text-lg:    14px;
+            /* размеры для canvas — читаются через cssVar() в JS */
+            --canvas-text-sm:    9px;
+            --canvas-text-base: 10px;
         }
 
         @font-face {
@@ -124,14 +132,14 @@
             gap: 0.5rem;
         }
         .control-group label {
-            font-size: 11px;
+            font-size: var(--text-sm);
             color: var(--text-muted);
             white-space: nowrap;
         }
         .btn-group { display: flex; gap: 2px; }
         .btn {
             font-family: var(--font-ui);
-            font-size: 11px;
+            font-size: var(--text-sm);
             padding: 3px 9px;
             border: 1px solid var(--border);
             background: transparent;
@@ -150,7 +158,7 @@
         }
         select {
             font-family: var(--font-ui);
-            font-size: 11px;
+            font-size: var(--text-sm);
             padding: 3px 6px;
             border: 1px solid var(--border);
             background: var(--bg-card);
@@ -162,7 +170,7 @@
         /* ── Секции ───────────────────────────────────────────────── */
         .section { margin-bottom: 2.5rem; }
         .section-title {
-            font-size: 10px;
+            font-size: var(--text-sm);
             font-weight: 600;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -212,7 +220,7 @@
             display: block;
         }
         .glyph-name {
-            font-size: 9px;
+            font-size: var(--text-xs);
             color: var(--text-muted);
             display: block;
             white-space: nowrap;
@@ -220,7 +228,7 @@
             text-overflow: ellipsis;
         }
         .glyph-code {
-            font-size: 9px;
+            font-size: var(--text-xs);
             color: var(--text-subtle);
             display: block;
         }
@@ -239,10 +247,11 @@
         }
         .inline-row:last-child { border-bottom: none; }
         .inline-row-label {
-            font-size: 10px;
+            font-size: var(--text-sm);
             color: var(--text-muted);
             padding: 8px 12px;
-            min-width: 170px;
+            min-width: var(--label-w, 150px);
+            width:     var(--label-w, 150px);
             border-right: 1px solid var(--border);
             white-space: nowrap;
             flex-shrink: 0;
@@ -292,7 +301,7 @@
             gap: 1rem;
             padding: 8px 12px;
             border-bottom: 1px solid var(--border);
-            font-size: 10px;
+            font-size: var(--text-sm);
             color: var(--text-muted);
             flex-wrap: wrap;
         }
@@ -313,7 +322,7 @@
             gap: 0.5rem 1.5rem;
             padding: 8px 12px;
             border-top: 1px solid var(--border);
-            font-size: 9px;
+            font-size: var(--text-xs);
             color: var(--text-muted);
         }
         .legend-item { display: flex; align-items: center; gap: 4px; }
@@ -323,6 +332,73 @@
         .aa-antialiased { -webkit-font-smoothing: antialiased; }
         .aa-subpixel    { -webkit-font-smoothing: subpixel-antialiased; }
         .aa-none        { -webkit-font-smoothing: none; }
+
+        /* ── Mobile adaptations ──────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            :root {
+                --text-xs:          8px;
+                --text-sm:          9px;
+                --text-base:       10px;
+                --text-lg:         12px;
+                --canvas-text-sm:   8px;
+                --canvas-text-base: 9px;
+            }
+
+            /* Уменьшить отступы страницы */
+            body { padding: 0.5rem; }
+
+            .site-header {
+                padding-bottom: 0.3rem;
+                margin-bottom: 1.2rem;
+            }
+            .site-header .meta { font-size: 9px; }
+
+            /* Уменьшить зазор между инспектором и панелью управления */
+            .section { margin-bottom: 1rem; }
+
+            /* Панель управления — каждая группа переносится на свою строку */
+            .controls {
+                gap: 0.5rem;
+                padding: 0.5rem;
+            }
+            .control-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            /* Кнопки размера и темы — растянуть на всю ширину группы */
+            .control-group .btn-group {
+                flex: 1;
+                justify-content: flex-end;
+            }
+            .control-group .btn-group .btn {
+                flex: 1;
+                text-align: center;
+                padding: 4px 2px;
+                line-height: 1.2;
+            }
+
+            /* Скрыть легенду инспектора на мобиле */
+            .legend { display: none; }
+
+            /* Фиксированное число колонок для сетки глифов */
+            .glyph-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            /* Строки сравнения — label компактнее, контент скроллится */
+            .inline-row-label {
+                padding: 6px 8px;
+            }
+            .inline-row-content {
+                overflow-x: auto;
+                padding: 6px 8px;
+                white-space: nowrap;
+            }
+
+            #coexistence          { --label-w:  90px; }
+            #smoothing-comparison { --label-w: 125px; }
+            #size-comparison      { --label-w:  45px; }
+        }
     </style>
 </head>
 <body>
@@ -344,11 +420,11 @@
             <canvas id="inspector-canvas" width="600" height="300"></canvas>
         </div>
         <div class="inspector-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#b85a10"></div>baseline</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
-            <div class="legend-item" style="margin-left:auto; display:flex; align-items:center; gap:0.5rem;">
+            <div class="legend-item legend"><div class="legend-dot" style="background:#b85a10"></div>baseline</div>
+            <div class="legend-item legend"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
+            <div class="legend-item legend"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
+            <div class="legend-item legend"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
+            <div class="legend-item legend" style="margin-left:auto; display:flex; align-items:center; gap:0.5rem;">
                 <span id="ratio-label" style="font-size:9px; color:var(--text-mute)">Screen</span>
                 <div class="btn-group" id="ratio-btns">
                     <button class="btn" data-ratio="1" disabled>1×</button>
@@ -390,7 +466,7 @@
             <button class="btn"        id="btn-dark"  onclick="setTheme('dark')">Dark</button>
         </div>
     </div>
-    <div class="control-group" style="margin-left:auto;">
+    <div class="control-group legend" style="margin-left:auto;">
         <label>
             <span class="badge badge-done">done</span> drawn &nbsp;
             <span class="badge badge-wip">wip</span> in progress &nbsp;
@@ -431,8 +507,8 @@
 
 <!-- Coexistence -->
 <section class="section">
-    <div class="section-title">Coexistence with JetBrains Mono — click any glyph above to compare</div>
-    <div class="inline-test-wrap">
+    <div class="section-title">Coexistence with JetBrains Mono — click any glyph above</div>
+    <div class="inline-test-wrap" id="coexistence">
         <div class="inline-row">
             <div class="inline-row-label">10 px (7.5 pt)</div>
             <div class="inline-row-content" id="coexist-10" style="font-size: 10px;"></div>
@@ -447,7 +523,7 @@
 <!-- Smoothing comparison -->
 <section class="section">
     <div class="section-title">Smoothing comparison — 10 px</div>
-    <div class="inline-test-wrap">
+    <div class="inline-test-wrap" id="smoothing-comparison">
         <div class="inline-row">
             <div class="inline-row-label">antialiased</div>
             <div class="inline-row-content aa-antialiased" id="sc-aa" style="font-size:10px"></div>
@@ -483,9 +559,9 @@ const GROUPS = {
         { name:'virgo',       code:0x264D, label:'Virgo' },
         { name:'libra',       code:0x264E, label:'Libra' },
         { name:'scorpio',     code:0x264F, label:'Scorpio' },
-        { name:'sagittarius', code:0x2650, label:'Sagittarius' },
-        { name:'capricorn',   code:0x2651, label:'Capricorn' },
-        { name:'aquarius',    code:0x2652, label:'Aquarius' },
+        { name:'sagittarius', code:0x2650, label:'Sagittarius', short:'Sgtr' },
+        { name:'capricorn',   code:0x2651, label:'Capricorn',   short:'Cprc' },
+        { name:'aquarius',    code:0x2652, label:'Aquarius',    short:'Aqrs' },
         { name:'pisces',      code:0x2653, label:'Pisces' },
     ],
     planets: [
@@ -501,27 +577,27 @@ const GROUPS = {
         { name:'pluto',   code:0x2BD3, label:'Pluto' },
     ],
     aspects: [
-        { name:'conjunction', code:0x260C, label:'Conjunction' },
+        { name:'conjunction', code:0x260C, label:'Conjunction', short:'Conj' },
         { name:'sextile',     code:0x26B9, label:'Sextile' },
         { name:'square',      code:0x25A1, label:'Square' },
         { name:'trine',       code:0x25B3, label:'Trine' },
-        { name:'opposition',  code:0x260D, label:'Opposition' },
-        { name:'semisextile', code:0x26BA, label:'Semisextile' },
-        { name:'quincunx',    code:0x26BB, label:'Quincunx' },
+        { name:'opposition',  code:0x260D, label:'Opposition',  short:'Oppo' },
+        { name:'semisextile', code:0x26BA, label:'Semisextile', short:'SSxt' },
+        { name:'quincunx',    code:0x26BB, label:'Quincunx',    short:'Qncx' },
     ],
     houses: [
-        { name:'house_1',  code:0xE001, label:'House I' },
-        { name:'house_2',  code:0xE002, label:'House II' },
-        { name:'house_3',  code:0xE003, label:'House III' },
-        { name:'house_4',  code:0xE004, label:'House IV' },
-        { name:'house_5',  code:0xE005, label:'House V' },
-        { name:'house_6',  code:0xE006, label:'House VI' },
-        { name:'house_7',  code:0xE007, label:'House VII' },
-        { name:'house_8',  code:0xE008, label:'House VIII' },
-        { name:'house_9',  code:0xE009, label:'House IX' },
-        { name:'house_10', code:0xE00A, label:'House X' },
-        { name:'house_11', code:0xE00B, label:'House XI' },
-        { name:'house_12', code:0xE00C, label:'House XII' },
+        { name:'house_1',  code:0xE001, label:'House I',    short:'H 1' },
+        { name:'house_2',  code:0xE002, label:'House II',   short:'H 2' },
+        { name:'house_3',  code:0xE003, label:'House III',  short:'H 3' },
+        { name:'house_4',  code:0xE004, label:'House IV',   short:'H 4' },
+        { name:'house_5',  code:0xE005, label:'House V',    short:'H 5' },
+        { name:'house_6',  code:0xE006, label:'House VI',   short:'H 6' },
+        { name:'house_7',  code:0xE007, label:'House VII',  short:'H 7' },
+        { name:'house_8',  code:0xE008, label:'House VIII', short:'H 8' },
+        { name:'house_9',  code:0xE009, label:'House IX',   short:'H 9' },
+        { name:'house_10', code:0xE00A, label:'House X',    short:'H 10' },
+        { name:'house_11', code:0xE00B, label:'House XI',   short:'H 11' },
+        { name:'house_12', code:0xE00C, label:'House XII',  short:'H 12' },
     ],
     test: [
         { name:'test_glyph', code:0xE000, label:'Test glyph' },
@@ -674,11 +750,13 @@ function inspectGlyph(glyphData) {
     }
 
     /* Тулбар */
+    const isMobile = window.innerWidth < 600;
+    const awLabel  = isMobile ? 'AW' : 'advance width';
     const hex = glyphData.code.toString(16).toUpperCase().padStart(4, '0');
     document.getElementById('inspector-toolbar').innerHTML =
         `<strong>${glyphData.label}</strong>` +
         `<span>U+${hex}</span>` +
-        `<span>advance width: <strong id="insp-aw">—</strong> upm</span>` +
+        `<span>${awLabel}: <strong id="insp-aw">—</strong> upm</span>` +
         `<span>LSB: <strong id="insp-lsb">—</strong></span>` +
         `<span>RSB: <strong id="insp-rsb">—</strong></span>`;
 
@@ -693,7 +771,8 @@ function drawInspector(codepoint) {
     /* Размер canvas под контейнер */
     const wrap    = canvas.parentElement;
     const cssW    = Math.min(wrap.clientWidth - 32, 700);
-    const fontSize = Math.round(cssW * 0.35); /* глиф занимает ~35% ширины */
+    const isMobile = cssW < 400;
+    const fontSize = Math.round(cssW * (isMobile ? 0.55 : 0.35));  // глиф занимает ~35% ширины на ПК и ~55% на телефоне
 
     /* Вертикальный размер = em square */
     const emPx   = fontSize;
@@ -730,7 +809,9 @@ function drawInspector(codepoint) {
     const aw    = glyph.advanceWidth || FM.upm;
     const scale = fontSize / FM.upm;
     const glyphW = aw * scale;
-    const startX = (cssW - glyphW) / 2;
+    const startX = isMobile
+        ? 16                   // фиксированный отступ от левого края
+        : (cssW - glyphW) / 2; // центр на десктопе
 
     /* Обновляем метрики в тулбаре */
     const bb = glyph.getBoundingBox();
@@ -762,7 +843,7 @@ function drawInspector(codepoint) {
         ctx.save();
         ctx.fillStyle   = color;
         ctx.globalAlpha = dashed ? 0.6 : 0.85;
-        ctx.font        = `10px ${cssVar('--font-ui')}`;
+        ctx.font        = `${cssVar('--canvas-text-base')} ${cssVar('--font-ui')}`;
         ctx.textAlign   = 'right';
         ctx.textBaseline = 'bottom';
         ctx.fillText(`${label} ${upmVal}`, cssW - 6, y - 2);
@@ -785,7 +866,7 @@ function drawInspector(codepoint) {
         ctx.save();
         ctx.fillStyle    = color;
         ctx.globalAlpha  = 0.7;
-        ctx.font         = `9px ${cssVar('--font-ui')}`;
+        ctx.font         = `${cssVar('--canvas-text-sm')} ${cssVar('--font-ui')}`;
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'top';
         ctx.fillText(label, x, 4);
@@ -855,7 +936,7 @@ function drawInspector(codepoint) {
         ctx.save();
         ctx.fillStyle    = cssVar('--accent');
         ctx.globalAlpha  = 0.7;
-        ctx.font         = `9px ${cssVar('--font-ui')}`;
+        ctx.font         = `${cssVar('--canvas-text-sm')} ${cssVar('--font-ui')}`;
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'top';
         // Координата X — середина между gridLeft и gridRight
@@ -902,7 +983,7 @@ function drawInspectorPlaceholder() {
     const ctx    = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle    = cssVar('--text-subtle');
-    ctx.font         = `11px ${cssVar('--font-ui') || 'monospace'}`;
+    ctx.font         = `${cssVar('--canvas-text-base')} ${cssVar('--font-ui') || 'monospace'}`;
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Font file not available — inspector disabled', canvas.width / 2, canvas.height / 2);
@@ -944,16 +1025,19 @@ function renderCell(g) {
     div.dataset.name = g.name;
     div.title = `${g.label} · U+${hex}`;
 
+    const isMobile = window.innerWidth < 600;
+    const displayLabel = (isMobile && g.short) ? g.short : g.label;
+
     if (missing) {
         div.innerHTML =
             `<span class="glyph-symbol"></span>` +
-            `<span class="glyph-name">${g.label}</span>` +
+            `<span class="glyph-name">${displayLabel}</span>` +
             `<span class="glyph-code">U+${hex}</span>`;
     } else {
         div.innerHTML =
             `<span class="glyph-symbol ${currentAA}" style="font-size:${currentSize}px">${cp(g.code)}</span>` +
             `<span class="badge badge-${st}">${st}</span>` +
-            `<span class="glyph-name">${g.label}</span>` +
+            `<span class="glyph-name">${displayLabel}</span>` +
             `<span class="glyph-code">U+${hex}</span>`;
         /* Клик → инспектор */
         div.addEventListener('click', () => inspectGlyph(g));
