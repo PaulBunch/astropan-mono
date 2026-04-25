@@ -45,10 +45,25 @@ jobs:
           mkdir -p _site/dist
           cp dist/astropan-mono.ttf   _site/dist/
           cp dist/astropan-mono.woff2 _site/dist/
+
+          # Создаем index.html из specimen.html
           cp docs/specimen.html       _site/index.html
+
+          # 1. Заменяем путь в CSS (src: url(...))
+          # Ищем кавычку + /dist/astropan-mono и меняем на кавычку + dist/astropan-mono
+          sed -i "s|'/dist/astropan-mono|'dist/astropan-mono|g" _site/index.html
+          sed -i 's|"/dist/astropan-mono|"dist/astropan-mono|g' _site/index.html
+
+          # 2. На случай относительного пути ../dist/ для локальной разработки
+          sed -i "s|'../dist/astropan-mono|'dist/astropan-mono|g" _site/index.html
+          sed -i 's|"../dist/astropan-mono|"dist/astropan-mono|g' _site/index.html
+
           # Копируем остальные файлы из docs/ если появятся (css, js, etc.)
           find docs/ -maxdepth 1 -type f ! -name 'specimen.html' \
             -exec cp {} _site/ \; 2>/dev/null || true
+
+          # Создаём пустой файл .nojekyll в корне _site, чтобы GitHub не пытался ничего фильтровать
+          touch _site/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
