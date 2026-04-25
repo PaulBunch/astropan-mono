@@ -138,6 +138,7 @@
             line-height: 1.4;
         }
         .btn:hover { background: var(--bg-muted); color: var(--text); }
+        .btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
         .btn.active {
             background: var(--accent-light);
             color: var(--accent);
@@ -343,7 +344,14 @@
             <div class="legend-item"><div class="legend-dot" style="background:#4a46b8"></div>ascender / descender</div>
             <div class="legend-item"><div class="legend-dot" style="background:#1a7a4a"></div>cap height / x-height</div>
             <div class="legend-item"><div class="legend-dot" style="background:#a0a09a"></div>bearings / advance width</div>
-            <div class="legend-item" style="margin-left:auto;">
+            <div class="legend-item" style="margin-left:auto; display:flex; align-items:center; gap:0.5rem;">
+                <span id="ratio-label" style="font-size:9px; color:var(--text-mute)">Screen</span>
+                <div class="btn-group" id="ratio-btns">
+                    <button class="btn active" data-ratio="1" disabled>1×</button>
+                    <button class="btn" data-ratio="2" disabled>2×</button>
+                    <button class="btn" data-ratio="3" disabled>3×</button>
+                    <button class="btn" data-ratio="auto" disabled>Auto</button>
+                </div>
                 <button class="btn" id="btn-pixel-grid" onclick="togglePixelGrid()">Pixel grid</button>
             </div>
         </div>
@@ -571,6 +579,7 @@ let currentAA      = 'aa-antialiased';
 let otFont         = null;   /* объект opentype.Font после загрузки */
 let activeGlyph    = null;   /* текущий выбранный глиф { name, code, label } */
 let showPixelGrid  = false;  /* пиксельная сетка в инспекторе */
+let currentRatio   = window.devicePixelRatio || 1;
 
 /* Метрики — дефолты, перезапишутся из TTF */
 let FM = { upm:1000, ascender:800, descender:-200, capHeight:730, xHeight:550, version:'—' };
@@ -800,8 +809,8 @@ function drawInspector(codepoint) {
 
     /* ── Пиксельная сетка (рисуется поверх глифа) ── */
     if (showPixelGrid) {
-        /* Один пиксель при 10px = UPM/10 единиц = fontSize/10 пикселей на canvas */
-        const cellPx = fontSize / currentSize;
+        /* cellPx — размер одного физического пикселя в координатах canvas-инспектора */
+        const cellPx = (fontSize / currentSize) / currentRatio;
 
         /* Зона сетки: em square = от ascender до descender, по X — вся ширина глифа */
         const gridTop  = PAD;                                                /* y ascender */
@@ -847,15 +856,21 @@ function drawInspector(codepoint) {
         ctx.textBaseline = 'top';
         // Координата X — середина между gridLeft и gridRight
         const centerX = gridLeft + (gridRight - gridLeft) / 2;
-        ctx.fillText(`1 cell = ${Math.round(cellPx * 10) / 10} px · ${Math.round(FM.upm / currentSize)} upm`, centerX, gridBot + 4);
+        ctx.fillText(
+            `1 cell = 1 physical px · ${Math.round(FM.upm / currentSize)} upm · ×${currentRatio}`,
+            centerX, gridBot + 4
+        );
         ctx.restore();
     }
 }
 
 function togglePixelGrid() {
     showPixelGrid = !showPixelGrid;
-    const btn = document.getElementById('btn-pixel-grid');
-    btn.classList.toggle('active', showPixelGrid);
+    document.getElementById('btn-pixel-grid').classList.toggle('active', showPixelGrid);
+    document.querySelectorAll('#ratio-btns .btn').forEach(btn => {
+        btn.disabled = !showPixelGrid;
+    });
+    document.getElementById('ratio-label').style.opacity = showPixelGrid ? '1' : '0.35';
     if (activeGlyph && otFont) drawInspector(activeGlyph.code);
 }
 
@@ -1031,6 +1046,24 @@ document.getElementById('smoothing-select').addEventListener('change', e => {
     currentAA = e.target.value;
     applySettings();
 });
+
+document.querySelectorAll('#ratio-btns .btn').forEach(btn => {
+    document.getElementById('ratio-label').style.opacity = showPixelGrid ? '1' : '0.35';
+    btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        document.querySelectorAll('#ratio-btns .btn')
+            .forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRatio = btn.dataset.ratio === 'auto'
+            ? (window.devicePixelRatio || 1)
+            : parseFloat(btn.dataset.ratio);
+        if (activeGlyph && otFont) drawInspector(activeGlyph.code);
+    });
+});
+
+// tooltip на Auto
+const autoBtn = document.querySelector('#ratio-btns [data-ratio="auto"]');
+if (autoBtn) autoBtn.title = `Detected: ×${window.devicePixelRatio || 1}`;
 
 /* Перерисовка при ресайзе окна */
 window.addEventListener('resize', () => {
