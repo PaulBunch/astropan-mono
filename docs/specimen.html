@@ -810,7 +810,7 @@ function drawInspector(codepoint) {
     const scale = fontSize / FM.upm;
     const glyphW = aw * scale;
     const startX = isMobile
-        ? 16                   // фиксированный отступ от левого края
+        ? 28                   // фиксированный отступ от левого края
         : (cssW - glyphW) / 2; // центр на десктопе
 
     /* Обновляем метрики в тулбаре */
@@ -939,11 +939,14 @@ function drawInspector(codepoint) {
         ctx.font         = `${cssVar('--canvas-text-sm')} ${cssVar('--font-ui')}`;
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'top';
+        // Вычисляем точное значение единиц на ячейку (физический пиксель)
+        const unitsPerCell = FM.upm / (currentSize * currentRatio);
+        const upmFormatted = parseFloat(unitsPerCell.toFixed(1));
+        const ratioFormatted = parseFloat(currentRatio.toFixed(1));
         // Координата X — середина между gridLeft и gridRight
         const centerX = gridLeft + (gridRight - gridLeft) / 2;
-        const ratioFormatted = parseFloat(currentRatio.toFixed(1));
         ctx.fillText(
-            `1 cell = 1 physical px · ${Math.round(FM.upm / currentSize)} upm · ×${ratioFormatted}`,
+            `1 cell = 1 physical px · ${upmFormatted} upm · ×${ratioFormatted}`,
             centerX, gridBot + 4
         );
         ctx.restore();
