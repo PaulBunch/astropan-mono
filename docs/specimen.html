@@ -412,7 +412,7 @@
 </section>
 
 <!-- Test glyph -->
-<section class="section">
+<section class="section" id="section-test">
     <div class="section-title">Test glyph (PUA U+E000) <span class="badge badge-todo" id="cnt-test"></span></div>
     <div class="glyph-grid" id="grid-test"></div>
 </section>
@@ -624,6 +624,9 @@ async function loadFont() {
         const firstDone = Object.values(GROUPS).flat().find(g => DONE.has(g.name));
         if (firstDone) inspectGlyph(firstDone);
 
+        // Отображаем секцию тестового глифа, если он есть в шрифте
+        updateTestSectionVisibility();
+
     } catch (err) {
         meta.textContent = `metrics: using defaults (${err.message})`;
         drawInspectorPlaceholder();
@@ -710,7 +713,7 @@ function drawInspector(codepoint) {
     const PAD  = 20;
     const baseY = PAD + ascPx;
     /* Горизонтальный центр — с учётом advance width */
-    const glyph = otFont.charToGlyph(String.fromCodePoint(codepoint));
+    const glyph = otFont.charToGlyph(cp(codepoint));
     const aw    = glyph.advanceWidth || FM.upm;
     const scale = fontSize / FM.upm;
     const glyphW = aw * scale;
@@ -936,6 +939,19 @@ function refreshGrids() {
         el.textContent = `${done} / ${arr.length}`;
         el.className = 'badge ' + (done === arr.length ? 'badge-done' : done > 0 ? 'badge-wip' : 'badge-todo');
     });
+
+    // Скрываем секцию тестового глифа, если глифа нет в шрифте
+    updateTestSectionVisibility();
+}
+
+function updateTestSectionVisibility() {
+    const testSection = document.getElementById('section-test');
+    let testGlyphPresent = false;
+    if (otFont) {
+        const glyph = otFont.charToGlyph(cp(0xE000));
+        testGlyphPresent = glyph && glyph.unicode === 0xE000;
+    }
+    if (testSection) testSection.style.display = testGlyphPresent ? '' : 'none';
 }
 
 /* ══════════════════════════════════════════════════════════════════════
