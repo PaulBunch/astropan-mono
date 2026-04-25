@@ -8,6 +8,10 @@
     <!-- opentype.js: читаем метрики прямо из TTF в браузере -->
     <script src="https://cdn.jsdelivr.net/npm/opentype.js/dist/opentype.min.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         /* ── Темы ────────────────────────────────────────────────────── */
         :root, [data-theme="light"] {
@@ -74,7 +78,7 @@
             color: var(--text);
             font-size: 12px;
             line-height: 1.6;
-            padding: 2rem;
+            padding: 1rem;
             max-width: 960px;
             margin: 0 auto;
             transition: background 0.15s, color 0.15s;
@@ -347,7 +351,7 @@
             <div class="legend-item" style="margin-left:auto; display:flex; align-items:center; gap:0.5rem;">
                 <span id="ratio-label" style="font-size:9px; color:var(--text-mute)">Screen</span>
                 <div class="btn-group" id="ratio-btns">
-                    <button class="btn active" data-ratio="1" disabled>1×</button>
+                    <button class="btn" data-ratio="1" disabled>1×</button>
                     <button class="btn" data-ratio="2" disabled>2×</button>
                     <button class="btn" data-ratio="3" disabled>3×</button>
                     <button class="btn" data-ratio="auto" disabled>Auto</button>
@@ -526,7 +530,7 @@ const GROUPS = {
 
 /* Обновлять по мере отрисовки глифов */
 const DONE = new Set([
-  'test_glyph',
+  // 'test_glyph',
   'opposition',
   'square',
   'pluto',
@@ -856,8 +860,9 @@ function drawInspector(codepoint) {
         ctx.textBaseline = 'top';
         // Координата X — середина между gridLeft и gridRight
         const centerX = gridLeft + (gridRight - gridLeft) / 2;
+        const ratioFormatted = parseFloat(currentRatio.toFixed(1));
         ctx.fillText(
-            `1 cell = 1 physical px · ${Math.round(FM.upm / currentSize)} upm · ×${currentRatio}`,
+            `1 cell = 1 physical px · ${Math.round(FM.upm / currentSize)} upm · ×${ratioFormatted}`,
             centerX, gridBot + 4
         );
         ctx.restore();
@@ -871,6 +876,24 @@ function togglePixelGrid() {
         btn.disabled = !showPixelGrid;
     });
     document.getElementById('ratio-label').style.opacity = showPixelGrid ? '1' : '0.35';
+    if (activeGlyph && otFont) drawInspector(activeGlyph.code);
+}
+
+function setInspectorRatio(ratioMode) {
+    // 1. Устанавливаем числовое значение для расчетов
+    if (ratioMode === 'auto') {
+        currentRatio = window.devicePixelRatio || 1;
+    } else {
+        currentRatio = parseFloat(ratioMode);
+    }
+
+    // 2. Синхронизируем визуальное состояние кнопок
+    document.querySelectorAll('#ratio-btns .btn').forEach(btn => {
+        // Кнопка активна, если её data-ratio совпадает с выбранным режимом
+        btn.classList.toggle('active', btn.dataset.ratio === String(ratioMode));
+    });
+
+    // 3. Перерисовываем, если нужно
     if (activeGlyph && otFont) drawInspector(activeGlyph.code);
 }
 
@@ -1051,13 +1074,7 @@ document.querySelectorAll('#ratio-btns .btn').forEach(btn => {
     document.getElementById('ratio-label').style.opacity = showPixelGrid ? '1' : '0.35';
     btn.addEventListener('click', () => {
         if (btn.disabled) return;
-        document.querySelectorAll('#ratio-btns .btn')
-            .forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentRatio = btn.dataset.ratio === 'auto'
-            ? (window.devicePixelRatio || 1)
-            : parseFloat(btn.dataset.ratio);
-        if (activeGlyph && otFont) drawInspector(activeGlyph.code);
+        setInspectorRatio(btn.dataset.ratio);
     });
 });
 
@@ -1078,6 +1095,7 @@ buildSizeComparison();
 buildSmoothingComparison();
 buildCoexistRow();
 drawInspectorPlaceholder();
+setInspectorRatio('auto');  // Устанавливаем начальное состояние (Auto) и синхронизируем кнопки
 
 if (typeof opentype !== 'undefined') {
     loadFont();
