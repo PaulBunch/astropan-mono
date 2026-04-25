@@ -1,238 +1,240 @@
-# AstroPan Mono — Техническое задание на шрифт
+# AstroPan Mono — Font Technical Specification
 
-## 1. Обзор проекта
-**Название:** AstroPan Mono
-**Тип:** Моноширинный иконочный шрифт
-**Назначение:** Отображение астрологических символов в интерфейсе приложения AstroPan и других совместимых проектов
-**Лицензия:** SIL Open Font License 1.1 (OFL)
-**Формат дистрибуции:** `.woff2` (основной), `.ttf` (архивный)
+> [Читать на русском](spec.ru.md)
 
----
-
-## 2. Цели и ограничения
-* **Главная цель:** Создать согласованный набор символов, сохраняющий безошибочную идентификацию на малом кегле (**10px**). Приоритет отдается сохранению внутренних просветов (counter-space) и оптической компенсации форм.
-* **Единый язык:** Одинаковая толщина штриха, радиусы скруглений и оптическая плотность для всех глифов ([подробнее](design-decisions.md)).
-* **Совместимость:** Пропорции должны позволять бесшовное использование шрифта совместно с **JetBrains Mono**.
+## 1. Project Overview
+**Name:** AstroPan Mono  
+**Type:** Monospaced Icon Font  
+**Purpose:** Display of astrological symbols in the AstroPan app interface and other compatible projects  
+**License:** SIL Open Font License 1.1 (OFL)  
+**Distribution format:** `.woff2` (primary), `.ttf` (archive)
 
 ---
 
-## 3. Технические характеристики
-
-### 3.1. Метрики шрифта
-
-**Глиф**
-| Параметр                      | Значение                    | Обоснование                  |
-| :---------------------------- | :-------------------------- | :--------------------------- |
-| Units Per Em (UPM)            | 1000                        |                              |
-| Ascender                      | 800                         |                              |
-| Descender                     | -200                        |                              |
-| Cap height                    | 730                         | Согласовано с JetBrains Mono |
-| x-height                      | 550                         | Согласовано с JetBrains Mono |
-| Baseline                      | 0                           |                              |
-| Advance width                 | 800                         | Обеспечивает четкую симметрию (8px при 10px кегле) |
-| Боковые отступы (sidebearing) | 60–100 UPM с каждой стороны | Обеспечивает межсимвольный зазор > 1px при 10px       |
-
-**Штрих**
-| Параметр                  | Значение | Обоснование                                     |
-| :------------------------ | :------- | :---------------------------------------------- |
-| Толщина основного штриха  | 80 UPM   | [Выбор ширины основного штриха](main_stroke.md) |
-| Толщина тонкого штриха    | 50 UPM   |                                                 |
-| Мин. зазор между штрихами | 100 UPM  | Не менее 1px для предотвращения слипания        |
-| Скругление углов          | 20 UPM   | Смягчение «клякс» при растеризации              |
-
-**Сетка**
-- Все узлы привязаны к минорному шагу сетки: 10 UPM
-- Ключевые границы штрихов (outline) привязываются к мажорному шагу сетки: 100 UPM (для попадания в физические пиксели при 10px)
-
-### 3.2. Геометрия и пиксельная симметрия
-Вместо адаптивной кратности площадок (600/900/1200) проект перешел на единый стандарт **800 UPM** для обеспечения «Pixel Perfect» отображения:
-
-1. **Принцип четной симметрии:** При ширине 800 UPM геометрический центр глифа приходится на координату 400 UPM. Это соответствует границе между 4-м и 5-м пикселем на 10-пиксельной сетке.
-2. **Оптические вылеты:** Допускается вынос скругленных элементов за пределы площадки (overshoot) до 10 UPM.
-3. **Правило свободного пространства:** Глиф должен занимать центральную часть площадки так, чтобы суммарный объем «воздуха» (LSB + RSB) составлял не менее **100 UPM**.
-
-**Эталоны плотности**
-- Для знаков: Дева
-- Для планет: Плутон
+## 2. Goals and Constraints
+* **Main goal:** Create a consistent set of symbols that remain clearly identifiable at small sizes (**10px**). Priority is given to preserving counter-space and optical compensation of shapes.
+* **Unified style:** Uniform stroke thickness, corner radii, and optical density for all glyphs ([details](design-decisions.md)).
+* **Compatibility:** Proportions must allow seamless use alongside **JetBrains Mono**.
 
 ---
 
-## 4. Состав глифов (41 символов)
+## 3. Technical Specifications
 
-### 4.1. Знаки зодиака (12)
-| Символ | Unicode | Название |
-| :----- | :------ | :------- |
-| ♈      | U+2648  | Овен     |
-| ♉      | U+2649  | Телец    |
-| ♊      | U+264A  | Близнецы |
-| ♋      | U+264B  | Рак      |
-| ♌      | U+264C  | Лев      |
-| ♍      | U+264D  | Дева     |
-| ♎      | U+264E  | Весы     |
-| ♏      | U+264F  | Скорпион |
-| ♐      | U+2650  | Стрелец  |
-| ♑      | U+2651  | Козерог  |
-| ♒      | U+2652  | Водолей  |
-| ♓      | U+2653  | Рыбы     |
+### 3.1. Font Metrics
 
-### 4.2. Планеты (10)
-| Символ | Unicode | Название |
-| :----- | :------ | :------- |
-| ☉      | U+2609  | Солнце   |
-| ☽      | U+263D  | Луна     |
-| ☿      | U+263F  | Меркурий |
-| ♀      | U+2640  | Венера   |
-| ♂      | U+2642  | Марс     |
-| ♃      | U+2643  | Юпитер   |
-| ♄      | U+2644  | Сатурн   |
-| ♅      | U+2645  | Уран     |
-| ♆      | U+2646  | Нептун   |
-| ⯓      | U+2BD3  | Плутон   |
+**Glyph**
+| Parameter          | Value                | Rationale                                 |
+| :----------------- | :------------------- | :---------------------------------------- |
+| Units Per Em (UPM) | 1000                 |                                           |
+| Ascender           | 800                  |                                           |
+| Descender          | -200                 |                                           |
+| Cap height         | 730                  | Aligned with JetBrains Mono               |
+| x-height           | 550                  | Aligned with JetBrains Mono               |
+| Baseline           | 0                    |                                           |
+| Advance width      | 800                  | Ensures clear symmetry (8px at 10px size) |
+| Sidebearings       | 60–100 UPM each side | Ensures >1px spacing at 10px              |
 
-### 4.3. Мажорные аспекты (5)
-| Символ | Unicode | Название   | Угол |
-| :----- | :------ | :--------- | :--- |
-| ☌      | U+260C  | Соединение | 0°   |
-| ⚹      | U+26B9  | Секстиль   | 60°  |
-| □      | U+25A1  | Квадратура | 90°  |
-| △      | U+25B3  | Трин       | 120° |
-| ☍      | U+260D  | Оппозиция  | 180° |
+**Stroke**
+| Parameter                 | Value   | Rationale                                     |
+| :------------------------ | :------ | :-------------------------------------------- |
+| Main stroke width         | 80 UPM  | [Main stroke width selection](main_stroke.md) |
+| Thin stroke width         | 50 UPM  |                                               |
+| Min. gap between strokes  | 100 UPM | ≥1px to prevent merging                       |
+| Corner rounding           | 20 UPM  | Softens “blobs” during rasterization          |
 
-### 4.3. Минорные аспекты (2)
-| Символ | Unicode | Название     | Угол |
-| :----- | :------ | :----------- | :--- |
-| ⚺      | U+26BA  | Полусекстиль | 30°  |
-| ⚻      | U+26BB  | Квиконс      | 150° |
+**Grid**
+- All nodes are aligned to a minor grid step: 10 UPM
+- Key outline boundaries are aligned to a major grid step: 100 UPM (for pixel-perfect rendering at 10px)
 
-### 4.5. Знаки домов (12)
-Стандартных Unicode-точек для домов не существует.
-Использовать зону Private Use Area (PUA): U+E001–U+E00C.
+### 3.2. Geometry and Pixel Symmetry
+Instead of adaptive width multiples (600/900/1200), the project uses a unified **800 UPM** standard for “Pixel Perfect” rendering:
 
-| Код    | Название |
+1. **Even symmetry principle:** With 800 UPM width, the geometric center is at 400 UPM, matching the boundary between the 4th and 5th pixel on a 10-pixel grid.
+2. **Optical overshoot:** Rounded elements may overshoot up to 10 UPM.
+3. **Whitespace rule:** The glyph must occupy the central area so that the total “air” (LSB + RSB) is at least **100 UPM**.
+
+**Density references**
+- For signs: Virgo
+- For planets: Pluto
+
+---
+
+## 4. Glyph Set (41 symbols)
+
+### 4.1. Zodiac Signs (12)
+| Symbol | Unicode | Name      |
+| :----- | :------ | :-------- |
+| ♈      | U+2648  | Aries     |
+| ♉      | U+2649  | Taurus    |
+| ♊      | U+264A  | Gemini    |
+| ♋      | U+264B  | Cancer    |
+| ♌      | U+264C  | Leo       |
+| ♍      | U+264D  | Virgo     |
+| ♎      | U+264E  | Libra     |
+| ♏      | U+264F  | Scorpio   |
+| ♐      | U+2650  | Sagittarius |
+| ♑      | U+2651  | Capricorn |
+| ♒      | U+2652  | Aquarius  |
+| ♓      | U+2653  | Pisces    |
+
+### 4.2. Planets (10)
+| Symbol | Unicode | Name      |
+| :----- | :------ | :-------- |
+| ☉      | U+2609  | Sun       |
+| ☽      | U+263D  | Moon      |
+| ☿      | U+263F  | Mercury   |
+| ♀      | U+2640  | Venus     |
+| ♂      | U+2642  | Mars      |
+| ♃      | U+2643  | Jupiter   |
+| ♄      | U+2644  | Saturn    |
+| ♅      | U+2645  | Uranus    |
+| ♆      | U+2646  | Neptune   |
+| ⯓      | U+2BD3  | Pluto     |
+
+### 4.3. Major Aspects (5)
+| Symbol | Unicode | Name        | Angle |
+| :----- | :------ | :---------- | :---- |
+| ☌      | U+260C  | Conjunction | 0°    |
+| ⚹      | U+26B9  | Sextile     | 60°   |
+| □      | U+25A1  | Square      | 90°   |
+| △      | U+25B3  | Trine       | 120°  |
+| ☍      | U+260D  | Opposition  | 180°  |
+
+### 4.4. Minor Aspects (2)
+| Symbol | Unicode | Name        | Angle |
+| :----- | :------ | :---------- | :---- |
+| ⚺      | U+26BA  | Semisextile | 30°   |
+| ⚻      | U+26BB  | Quincunx    | 150°  |
+
+### 4.5. House Signs (12)
+There are no standard Unicode points for houses.  
+Use Private Use Area (PUA): U+E001–U+E00C.
+
+| Code   | Name     |
 | :----- | :------- |
-| U+E001 | Дом I    |
-| U+E002 | Дом II   |
+| U+E001 | House I  |
+| U+E002 | House II |
 | ...    | ...      |
-| U+E00C | Дом XII  |
+| U+E00C | House XII|
 
-Для удобства использования в Web создать CSS-карту классов (`.icon-house-1`).
+For web use, create a CSS class map (`.icon-house-1`).
 
 ---
 
-## 5. Рабочий процесс
+## 5. Workflow
 
-### 5.1. Файловая структура
+### 5.1. File Structure
 ```
 astropan-mono/
 ├── .github/                 # Infrastructure & CI/CD
 │   └── workflows/
 │       └── deploy.yml
 ├── src/
-│   ├── config.toml          # Параметры шрифта (имя, версия, метрики)
-│   ├── glyphs/              # Исходные глифы
+│   ├── config.toml          # Font parameters (name, version, metrics)
+│   ├── glyphs/              # Source glyphs
 │   │   ├── aries.svg
 │   │   ├── taurus.svg
 │   │   └── ...
 │   ├── templates/ 
-│   │   ├── guidelines.svg   # Мастер-сетка (нередактируемый слой)
-│   │   └── glyph.svg        # Шаблон нового глифа: guidelines + пустой слой для рисования
-│   └── references/          # Референсы (в .gitignore)
-├── build/                   # Временные файлы (.ufo) (в .gitignore)
-├── dist/                    # Результат сборки (в .gitignore)
+│   │   ├── guidelines.svg   # Master grid (non-editable layer)
+│   │   └── glyph.svg        # New glyph template: guidelines + empty drawing layer
+│   └── references/          # References (in .gitignore)
+├── build/                   # Temporary files (.ufo) (in .gitignore)
+├── dist/                    # Build output (in .gitignore)
 │   ├── astropan-mono.woff2
 │   └── astropan-mono.ttf
 ├── docs/
-│   ├── spec.md              # Техническое задание
-│   ├── specimen.html        # Тестовая страница со всеми глифами
-│   └── design-decisions.md  # Журнал проектных решений
+│   ├── spec.md              # Technical specification
+│   ├── specimen.html        # Test page with all glyphs
+│   └── design-decisions.md  # Design decisions log
 ├── scripts/
-│   ├── build.py             # Сборка шрифта
-│   ├── ff2ref.py            # Конвертация SVG из FontForge в эталонные шаблоны (масштабирование, чистка, переименование)
-│   └── svg_extractor.py     # Извлечение и нормализация SVG-иконок из веб-источников в референсы (парсинг, масштаб, уникальные имена)
-├── requirements.txt         # Список зависимостей
-├── CONTRIBUTING.md          # Гайд для контрибьюторов. Как добавить глиф: требования к SVG, соглашения об именовании
+│   ├── build.py             # Font build script
+│   ├── ff2ref.py            # Convert SVGs from FontForge to reference templates (scaling, cleaning, renaming)
+│   └── svg_extractor.py     # Extract and normalize SVG icons from web sources into references (parsing, scaling, unique naming)
+├── requirements.txt         # Dependency list
+├── CONTRIBUTING.md          # Contributor guide: how to add glyphs, SVG requirements, naming conventions
 ├── README.md
-└── LICENSE                  # Текст лицензии OFL 1.1
+└── LICENSE                  # OFL 1.1 license text
 ```
 
-### 5.2. Инструменты
-| Этап                 | Инструменты                        |
-| -------------------- | ---------------------------------- |
-| Отрисовка            | Inkscape                           |
-| Промежуточный формат | UFO (Unified Font Object)          |
-| Сборка (Compiler)    | `fontmake`, `ufoLib2`, `fonttools` |
-| Оптимизация          | `pyftsubset` (сжатие в woff2)      |
-| Хинтинг              | FontForge                          |
-| Контроль качества    | Браузер (10px test), Glyphr Studio |
+### 5.2. Tools
+| Stage                | Tools                                |
+| -------------------- | ------------------------------------ |
+| Drawing              | Inkscape                             |
+| Intermediate format  | UFO (Unified Font Object)            |
+| Build (Compiler)     | `fontmake`, `ufoLib2`, `fonttools`   |
+| Optimization         | `pyftsubset` (woff2 compression)     |
+| Hinting              | FontForge                            |
+| QA                   | Browser (10px test), Glyphr Studio   |
 
-**Схема данных:**
+**Data flow:**  
 `[SVG Sources]` → `[build.py]` → `[UFO Directory]` → `[fontmake]` → `[TTF/WOFF2]`
 
-## 5.3. Управление данными
-Конфигурация `src/config.toml` управляет процессом сборки:
-* Связывает имена файлов (например, `pluto.svg`) с кодами Unicode.
-* Устанавливает индивидуальную ширину (`advance width`) для Wide-глифов.
-* Хранит глобальные метрики (Ascender, Descender, UPM).
+## 5.3. Data Management
+The `src/config.toml` configures the build process:
+* Maps file names (e.g., `pluto.svg`) to Unicode codepoints.
+* Sets individual advance widths for wide glyphs.
+* Stores global metrics (Ascender, Descender, UPM).
 
-## 5.4. Трансформация координат (Inkscape → Font)
-При импорте векторов скрипт `build.py` автоматически выполняет перевод координат из экранной системы Inkscape в шрифтовую. Базовая линия (Baseline) в Inkscape принята на отметке **800 px**.
+## 5.4. Coordinate Transformation (Inkscape → Font)
+When importing vectors, the `build.py` script automatically converts coordinates from Inkscape’s screen system to font coordinates. The baseline in Inkscape is set at **800 px**.
 
-**Формула инверсии оси Y:**
+**Y-axis inversion formula:**
 $$y_{font} = 800 - y_{inkscape}$$
 
-**Примеры трансформации (при UPM 1000):**
-* Верхняя граница ($y_{ink} = 0$) $\Rightarrow$ $y_{font} = 800$ (Ascender)
-* Базовая линия ($y_{ink} = 800$) $\Rightarrow$ $y_{font} = 0$ (Baseline)
-* Нижняя граница ($y_{ink} = 1000$) $\Rightarrow$ $y_{font} = -200$ (Descender
+**Transformation examples (for UPM 1000):**
+* Top boundary ($y_{ink} = 0$) $\Rightarrow$ $y_{font} = 800$ (Ascender)
+* Baseline ($y_{ink} = 800$) $\Rightarrow$ $y_{font} = 0$ (Baseline)
+* Bottom boundary ($y_{ink} = 1000$) $\Rightarrow$ $y_{font} = -200$ (Descender)
 
 ---
 
-### 6. Порядок разработки
+### 6. Development Phases
 
-**Фаза 0 — Система (до рисования)**
-- [x] Создать `guidelines.svg`: em square 1000×1000, направляющие: baseline (0), cap height (730), x-height (550), geometric center (500), descender (-200)
-- [x] Определить optical center визуально и зафиксировать значение
-- [x] Нарисовать тестовый прямоугольник с толщиной штриха 100 UPM
-- [x] Реализовать первый вариант скрипта сборки шрифта `build.py`
-- [x] Реализовать первый вариант `specimen.html`
-- [x] Проверить читаемость тестового прямоугольника на 10px в браузере
-- [x] Зафиксировать финальные значения метрик в этом документе
+**Phase 0 — System (before drawing)**
+- [x] Create `guidelines.svg`: em square 1000×1000, guides: baseline (0), cap height (730), x-height (550), geometric center (500), descender (-200)
+- [x] Visually determine and fix the optical center value
+- [x] Draw a test rectangle with a 100 UPM stroke width
+- [x] Implement the initial font build script `build.py`
+- [x] Implement the first version of `specimen.html`
+- [x] Check test rectangle readability at 10px in browser
+- [x] Finalize metric values in this document
 
-**Фаза 1 — Эталоны (6 символов)**
-Цель: отработать систему на крайних случаях сложности.
-- [x] ☍ Оппозиция — простейший
-- [x] □ Квадратура — угловой
-- [x] ⯓ Плутон — максимальная насыщенность
-- [x] ♍ Дева — максимальная плотность
-- [x] ♈ Овен — средний
-- [x] ♄ Сатурн — сложный составной
+**Phase 1 — Reference glyphs (6 symbols)**
+Goal: test the system on edge cases.
+- [x] ☍ Opposition — simplest
+- [x] □ Square — angular
+- [x] ⯓ Pluto — maximum density
+- [x] ♍ Virgo — maximum density
+- [x] ♈ Aries — average
+- [x] ♄ Saturn — complex composite
 
-Критерий перехода к Фазе 2: все 6 символов однозначно читаются при `font-size: 10px` в браузере Chrome и Firefox.
+Transition to Phase 2: all 6 symbols are unambiguously readable at `font-size: 10px` in Chrome and Firefox.
 
-**Фаза 2 — Полный набор (41 символов)**
-Порядок: аспекты → планеты → знаки зодиака → дома.
-Аспекты первыми: геометрически простейшие (круг, квадрат, треугольник), задают язык форм — толщину штриха, скругления — для всего набора.
-Дома последними: нет Unicode-референса, форма определяется свободно после того как язык форм устоялся.
+**Phase 2 — Full set (41 symbols)**
+Order: aspects → planets → zodiac signs → houses.
+Aspects first: geometrically simplest (circle, square, triangle), set the design language for the whole set.
+Houses last: no Unicode reference, shape is defined freely after the design language is established.
 
-**Фаза 3 — Хинтинг и оптимизация**
-- [ ] Хинтинг в FontForge если есть артефакты на 10px
-- [x] `pyftsubset` → финальный `.woff2`
-- [x] Проверить все глифы на 10, 12, 14, 16px в `specimen.html`
-- [ ] Прогонять шрифт через `fontbakery`
-
----
-
-## 7. Критерии качества
-Шрифт считается готовым к релизу если:
-
-1. **Читаемость:** 100% распознаваемость всех глифов при кегле 10px в Chrome и Firefox на дисплеях с плотностью от 120 до 150 DPI. На дисплеях с низкой плотностью (96 DPI) критерием готовности считается отсутствие слипания внутрибуквенного просвета (counter) при кегле 12px.
-2. **Геометрия:** Отклонение толщины основных вертикальных и горизонтальных штрихов (stems) от целевого значения 80 UPM не превышает -10/+5 UPM. На участках оптических компенсаций (наплывы, сопряжения дуг со штрихом, визуальные ловушки) допускается отклонение до -50/+15 UPM при условии сохранения визуальной однородности набора.
-3. **Просветы:** Внутренние пустые пространства (counters) ≥ 50 UPM (мнимум 0.5px)
-4. **Центровка:** Все глифы оптически сбалансированы относительно центра площадки
-5. **Вес:** Размер файла `.woff2` менее 20 КБ
-6. **Производительность:** Отсутствие визуальных артефактов FOUT (flash of unstyled text) при `font-display: block`
+**Phase 3 — Hinting and optimization**
+- [ ] Hinting in FontForge if artifacts appear at 10px
+- [x] `pyftsubset` → final `.woff2`
+- [x] Check all glyphs at 10, 12, 14, 16px in `specimen.html`
+- [ ] Run font through `fontbakery`
 
 ---
 
-## 8. Вдохновение
-Технические решения и визуальная строгость опираются на принципы **JetBrains Mono**.
+## 7. Quality Criteria
+The font is ready for release if:
+
+1. **Legibility:** 100% recognition of all glyphs at 10px in Chrome and Firefox on screens with 120–150 DPI. On low-DPI screens (96 DPI), readiness is defined by the absence of counter merging at 12px.
+2. **Geometry:** Deviation of main vertical/horizontal stem thickness from the target 80 UPM does not exceed -10/+5 UPM. In areas of optical compensation (joins, traps), deviation up to -50/+15 UPM is allowed if visual uniformity is preserved.
+3. **Counters:** Internal empty spaces (counters) ≥ 50 UPM (at least 0.5px)
+4. **Centering:** All glyphs are optically balanced relative to the center
+5. **File size:** `.woff2` file size is less than 20 KB
+6. **Performance:** No FOUT (flash of unstyled text) artifacts with `font-display: block`
+
+---
+
+## 8. Inspiration
+Technical solutions and visual rigor are based on the principles of **JetBrains Mono**.
