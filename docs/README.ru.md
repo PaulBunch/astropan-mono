@@ -61,7 +61,7 @@
 ```css
 @font-face {
   font-family: 'AstroPan Mono';
-  src: url('/dist/astropan-mono.woff2') format('woff2');
+  src: url('https://paulbunch.github.io/astropan-mono/dist/astropan-mono.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: block;
