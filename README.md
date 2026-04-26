@@ -1,56 +1,64 @@
 # AstroPan Mono
 
-_English translation of the documentation is in progress. Currently, documents are available in Russian._
+[Читать на русском](docs/README.ru.md)
 
-**AstroPan Mono** — специализированный иконочный шрифт для астрологических интерфейсов. Разработан для обеспечения предельной чёткости на малых кеглях (от **10px**) при строгом соблюдении моноширинной сетки.
+**AstroPan Mono** is a specialized icon font for astrological interfaces. It is designed for maximum clarity at small sizes (from **10px**) while strictly adhering to a monospaced grid.
 
-Проект вдохновлен инженерными решениями **JetBrains Mono**, адаптируя их под специфику сложной астрологической графики.
+![AstroPan Mono Preview](img/glyphs.png)
 
----
+The project is inspired by the engineering solutions of **JetBrains Mono**, adapting them to the specifics of complex astrological graphics.
 
-## Ключевые особенности
-
-  * **Grid-Aware Geometry (10px):** Геометрия знаков оптимизирована под 10-пиксельную сетку. Выбранная ширина площадки в **800 UPM** (8 пикселей при кегле 10px) обеспечивает идеальный баланс между компактностью и разборчивостью сложных символов.
-  * **Main Stroke (80 UPM):** Основной штрих толщиной 0.8px (при 10px) выбран как математически оптимальный. Он сохраняет максимальный внутренний просвет (counter-space) и гарантирует четкое, контролируемое сглаживание без превращения знака в «кляксу».
-  * **Совместимость с JetBrains Mono:** Все высотные метрики (Ascender, Descender, Cap Height, x-Height) полностью синхронизированы с JetBrains Mono.
-  * **Строгая сетка:** Все узлы и параметры контуров привязаны к минорному шагу в 10 единиц, что гарантирует чистоту форм при растеризации.
+[**Live Demo & Specimen**](https://paulbunch.github.io/astropan-mono/)
 
 ---
 
-## Технические характеристики
+## Key Features
 
-| Параметр               | Значение         |
+* **Grid-aware geometry (10px):** The geometry of the signs is optimized for a 10-pixel grid. The chosen width of **800 UPM** (8 pixels at 10px size) provides the ideal balance between compactness and legibility for complex symbols.
+* **Main stroke (80 UPM):** The main stroke width of 0.8px (at 10px) is mathematically optimal. It preserves maximum counter-space and guarantees clear, controlled anti-aliasing without turning the sign into a “blob”.
+* **JetBrains Mono compatibility:** All vertical metrics (Ascender, Descender, Cap Height, x-Height) are fully synchronized with JetBrains Mono.
+* **Strict grid:** All nodes and outline parameters are aligned to a minor step of 10 units, ensuring clean shapes during rasterization.
+
+---
+
+## Technical Specifications
+
+| Parameter              | Value            |
 | :--------------------- | :--------------- |
 | **Units Per Em (UPM)** | 1000             |
 | **Advance Width**      | 800 UPM          |
 | **Main Stroke**        | 80 UPM           |
 | **Thin Stroke**        | 50 UPM           |
 | **Target Size**        | 10px             |
-| **Форматы**            | `.woff2`, `.ttf` |
+| **Formats**            | `.woff2`, `.ttf` |
+
+[More details in the specification](docs/spec.md)
 
 ---
 
-## Дизайн-группы
+## Design Groups
 
-1. **Планеты и аспекты:** Строгие геометрические формы с единой толщиной штриха. Планетарные глифы построенные на базе круга.
-2. **Знаки зодиака:** Каллиграфический подход с ручной компенсацией толщины для сохранения узнаваемости в ограниченном пространстве 800 UPM.
+1. **Planets and aspects:** Strict geometric shapes with a unified stroke width. Planetary glyphs are based on the circle.
+2. **Zodiac signs:** Calligraphic approach with manual stroke compensation to preserve recognizability within the limited 800 UPM space.
 
----
-
-## Состав шрифта (v1.0)
-
-Набор включает **41 базовый символ**:
-
-  * **Зодиак (12):** Стандартные Unicode-позиции.
-  * **Планеты (10):** Основной септенер + высшие планеты.
-  * **Аспекты (7):** Мажорные аспекты (0°, 30°, 60°, 90°, 120°, 150°, 180°).
-  * **Дома (12):** Расположены в зоне **PUA** (`U+E000`–`U+E00B`).
+[More about design](docs/design-decisions.md)
 
 ---
 
-## Использование
+## Font Set (v1.0)
 
-Микротипографика в web (CSS):
+The set includes **41 basic symbols**:
+
+  * **Zodiac (12):** Standard Unicode positions
+  * **Planets (10):** The main septener + outer planets
+  * **Aspects (7):** Major and minor aspects (0°, 30°, 60°, 90°, 120°, 150°, 180°)
+  * **Houses (12):** Located in the **PUA** area (`U+E001`–`U+E00C`)
+
+---
+
+## Usage
+
+Microtypography in web (CSS):
 
 ```css
 @font-face {
@@ -72,36 +80,55 @@ _English translation of the documentation is in progress. Currently, documents a
 
 ---
 
-## Разработка и сборка
+## Development & Build
 
-Проект использует автоматизированный пайплайн: кастомные скрипты преобразуют **SVG-исходники** в формат **UFO**, после чего шрифт компилируется через **fontmake**.
+The project uses an automated pipeline: custom scripts convert **SVG sources** to **UFO** format, after which the font is compiled via **fontmake**.
 
-### Структура проекта
+### Project Structure
 
-  * `src/glyphs/` — исходные SVG-векторы символов.
-  * `src/config.toml` — параметры шрифта (именование, метрики) отдельно от графики.
-  * `scripts/build.py` — основной скрипт сборки.
-  * `docs/spec.md` — техническая спецификация.
+* `src/glyphs/` — source SVG vectors for symbols
+* `src/config.toml` — font parameters (naming, metrics) separate from graphics
+* `scripts/build.py` — main build script
+* `docs/spec.md` — technical specification
 
-### Сборка
+### Build
 
-Требуется **Python 3.11+** (используется стандартная библиотека `tomllib`).
+Requires **Python 3.11+** (uses the standard `tomllib` library).
 
-Скрипт автоматически импортирует векторы из Inkscape, нормализует кривые и генерирует файлы шрифтов:
+The script automatically imports vectors from Inkscape, normalizes curves, and generates font files:
 
 ```bash
-# Установка зависимостей
+# Install dependencies
 pip install fontmake ufo2ft fonttools brotli
 
-# Запуск сборки
+# Run build
 python scripts/build.py
 ```
 
+### Testing
+
+For visual control, there is an interactive page [specimen.html](docs/specimen.html). The specimen allows you to check glyph rendering on Canvas and monitor pixel-perfect alignment on the physical monitor grid.
+
+[Live Specimen](https://paulbunch.github.io/astropan-mono/)
+
+![Inspector Preview](img/inspector.png)
+
 ---
 
-## Лицензия
+## Thanks
 
-Распространяется на условиях **SIL Open Font License 1.1**. Вы можете свободно использовать, изучать, изменять и распространять его при условии сохранения авторства. Текст лицензии находится в файле [LICENSE](LICENSE).
+* **[JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)** — for inspiration and open metrics
+* **[Inkscape](https://gitlab.com/inkscape/inkscape) & [FontForge](https://github.com/fontforge/fontforge) & [OpenType](https://github.com/opentypejs/opentype.js)** — for accessible tools
+* **[Google Fonts / Fontmake](https://github.com/googlefonts/fontmake)** — for the build toolchain
+* **[Unified Font Object (UFO)](https://github.com/unified-font-object/ufo-spec)** — for the universal data format
+* **AI Collaborators (Gemini, Claude, Grok)** — for help in designing the build architecture and pipeline automation
 
 ---
-*Проект является частью экосистемы AstroPan.*
+
+## License
+
+Distributed under the **SIL Open Font License 1.1**. You are free to use, study, modify, and distribute it as long as authorship is preserved. The license text is in [LICENSE](LICENSE).
+
+---
+
+*This project is part of the AstroPan ecosystem.*
