@@ -218,7 +218,7 @@ $$y_{font} = 800 - y_{inkscape}$$
 - [ ] Хинтинг в FontForge если есть артефакты на 10px
 - [x] `pyftsubset` → финальный `.woff2`
 - [x] Проверить все глифы на 10, 12, 14, 16px в `specimen.html`
-- [ ] Прогонать шрифт через `fontbakery`
+- [x] Прогонать шрифт через `fontbakery`
 
 ---
 

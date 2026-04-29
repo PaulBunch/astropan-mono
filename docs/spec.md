@@ -220,7 +220,7 @@ Houses last: no Unicode reference, shape is defined freely after the design lang
 - [ ] Hinting in FontForge if artifacts appear at 10px
 - [x] `pyftsubset` → final `.woff2`
 - [x] Check all glyphs at 10, 12, 14, 16px in `specimen.html`
-- [ ] Run font through `fontbakery`
+- [x] Run font through `fontbakery`
 
 ---
 
