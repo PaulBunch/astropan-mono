@@ -87,8 +87,8 @@ def parse_svg_path(svg_file: Path) -> str:
 def build_notdef(font, metrics):
     g = font.newGlyph(".notdef")
 
-    asc  = metrics["ascender"]           # 1020
-    desc = metrics["descender"]          # -300
+    base = 0
+    cap  = metrics["cap_height"]         # 730
     w    = metrics["advance_width_base"] # 800
 
     g.width = w
@@ -98,16 +98,16 @@ def build_notdef(font, metrics):
 
     pen = g.getPen()
     # Внешний контур (по часовой)
-    pen.moveTo((margin, desc))
-    pen.lineTo((w - margin, desc))
-    pen.lineTo((w - margin, asc))
-    pen.lineTo((margin, asc))
+    pen.moveTo((margin, base))
+    pen.lineTo((w - margin, base))
+    pen.lineTo((w - margin, cap))
+    pen.lineTo((margin, cap))
     pen.closePath()
     # Внутренний контур (против часовой — дыра)
-    pen.moveTo((margin + stroke, desc + stroke))
-    pen.lineTo((margin + stroke, asc - stroke))
-    pen.lineTo((w - margin - stroke, asc - stroke))
-    pen.lineTo((w - margin - stroke, desc + stroke))
+    pen.moveTo((margin + stroke, base + stroke))
+    pen.lineTo((margin + stroke, cap - stroke))
+    pen.lineTo((w - margin - stroke, cap - stroke))
+    pen.lineTo((w - margin - stroke, base + stroke))
     pen.closePath()
 
 
