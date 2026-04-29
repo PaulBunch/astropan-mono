@@ -84,6 +84,33 @@ def parse_svg_path(svg_file: Path) -> str:
     return " ".join(paths)
 
 
+def build_notdef(font, metrics):
+    g = font.newGlyph(".notdef")
+
+    asc  = metrics["ascender"]           # 1020
+    desc = metrics["descender"]          # -300
+    w    = metrics["advance_width_base"] # 800
+
+    g.width = w
+
+    margin  = 50   # боковой отступ рамки
+    stroke  = 80   # толщина рамки = основной штрих из spec
+
+    pen = g.getPen()
+    # Внешний контур (по часовой)
+    pen.moveTo((margin, desc))
+    pen.lineTo((w - margin, desc))
+    pen.lineTo((w - margin, asc))
+    pen.lineTo((margin, asc))
+    pen.closePath()
+    # Внутренний контур (против часовой — дыра)
+    pen.moveTo((margin + stroke, desc + stroke))
+    pen.lineTo((margin + stroke, asc - stroke))
+    pen.lineTo((w - margin - stroke, asc - stroke))
+    pen.lineTo((w - margin - stroke, desc + stroke))
+    pen.closePath()
+
+
 def main() -> None:
     # Проверяем наличие ключей в аргументах запуска
     verbose = "-v" in sys.argv or "--verbose" in sys.argv
@@ -107,7 +134,8 @@ def main() -> None:
 
     # 2. Подготовка директорий
     Path("build").mkdir(exist_ok=True)
-    Path("dist").mkdir(exist_ok=True)
+    dist_dir = Path("dist")
+    dist_dir.mkdir(exist_ok=True)
     ufo_path = Path("build/AstroPanMono.ufo")
 
     # 3. Инициализация объекта UFO
@@ -130,8 +158,8 @@ def main() -> None:
     font.info.openTypeNameLicenseURL = font_cfg["license_url"]
 
     # Встраиваемость (fsType)
-    # 0 означает "Installable Embedding" (нет ограничений)
-    font.info.openTypeOS2Type = [font_cfg["fs_type"]]
+    # "Installable Embedding" (нет ограничений)
+    font.info.openTypeOS2Type = []
 
     # Основные метрики UFO
     font.info.unitsPerEm = m["upm"]
@@ -169,6 +197,9 @@ def main() -> None:
     # Четвертый элемент (9) критичен для Mono
     font.info.openTypeOS2Panose = [2, 11, 5, 9, 2, 2, 3, 2, 2, 4] # Стандарт для Mono
 
+    # Моноширинный флаг для PostScript
+    font.info.postscriptIsFixedPitch = font_cfg.get("is_fixed_pitch", False)
+
     # Индексы: Subscript (Нижние)
     font.info.openTypeOS2SubscriptYSize = m["sub_size_y"]
     font.info.openTypeOS2SubscriptYOffset = m["sub_offset_y"]
@@ -190,10 +221,20 @@ def main() -> None:
 
     # -----------------------------------
 
-    # Обязательный системный глиф .notdef
-    notdef = font.newGlyph(".notdef")
     advance_width_base = m["advance_width_base"]
-    notdef.width = advance_width_base
+
+    # Обязательный системный глиф .notdef
+    build_notdef(font, m)
+
+    # Глифы пробела (U+0020)
+    space = font.newGlyph("space")
+    space.unicode = 0x0020
+    space.width = advance_width_base
+
+    # Глиф неразрывного пробела (Non-Breaking Space) (U+00A0)
+    nbsp = font.newGlyph("nbsp")
+    nbsp.unicode = 0x00A0
+    nbsp.width = advance_width_base
 
     # 4. Обработка глифов
     glyphs_dir = Path("src/glyphs")
@@ -293,7 +334,8 @@ def main() -> None:
     logging.info("UFO written: %s", ufo_path)
 
     # 7. Компиляция TTF (fontmake сам переведет кубические кривые Безье в квадратичные)
-    ttf_path = Path("dist/astropan-mono.ttf")
+    font_name = config["output"]["font_name"]
+    ttf_path = dist_dir / f"{font_name}.ttf"
     logging.info("compiling TTF via fontmake...")
 
     try:
@@ -316,8 +358,23 @@ def main() -> None:
 
     logging.info("TTF written: %s", ttf_path)
 
+    # 7.1. Исправление хинтинга через gftools
+    logging.info("fixing non-hinting with gftools...")
+    try:
+        subprocess.run([
+            "gftools", "fix-nonhinting",
+            str(ttf_path), str(ttf_path)
+        ], check=True, capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        logging.error("gftools fix-nonhinting failed (exit code %d)", exc.returncode)
+        sys.exit(1)
+
+    backup_path = ttf_path.parent / (ttf_path.stem + "-backup-fonttools-prep-gasp.ttf")
+    if backup_path.exists():
+        backup_path.unlink()
+
     # 8. Сжатие в WOFF2 для веба
-    woff2_path = Path("dist/astropan-mono.woff2")
+    woff2_path = dist_dir / f"{font_name}.woff2"
     logging.info("compressing to WOFF2 via pyftsubset...")
 
     try:

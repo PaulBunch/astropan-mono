@@ -1,6 +1,6 @@
 [font]
 family_name  = "AstroPan Mono"
-version      = "1.0"
+version      = "1.001"
 copyright    = "Copyright (c) 2026, Paul Bunch (p.m.puchkov@gmail.com), with Reserved Font Name \"AstroPan Mono\"."
 designer     = "Pavel M. Puchkov"
 designer_url = "https://github.com/PaulBunch"
@@ -9,13 +9,11 @@ license_url  = "https://openfontlicense.org"
 vendor       = "BNCH"  # Уникальный 4-символьный ID
 # PFM Family (Proportional/Monospace/etc для Windows)
 # 49 = Monospace (Fixed Width)
-pfm_family   = 49  # TODO: Определиться с шириной и добавить этот параметр в build.py
+pfm_family   = 49
+is_fixed_pitch = true
 # fsType (Embeddable): 0 = Installable (полные права на внедрение)
-fs_type      = 0
-
 
 [metrics]
-
 # --- Метрики SVG‐холста ---
 
 upm                = 1000
@@ -50,6 +48,9 @@ sub_size_y         =  600
 sub_offset_y       =   75
 super_size_y       =  600
 super_offset_y     =  350
+
+[output]
+font_name = "AstroPanMono-Regular"
 
 [glyphs]
 # Знаки зодиака
