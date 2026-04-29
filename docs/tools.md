@@ -98,7 +98,7 @@ from fonttools import ...
 Inkscape (рисование) 
   → src/glyphs/*.svg (хранение, git)
     → build.py + fonttools (сборка)
-      → dist/astropan-mono.woff2
+      → dist/AstroPanMono-Regular.woff2
 ```
 
 Glyphr Studio остаётся для визуальной проверки метрик и промежуточного просмотра — но не как единственный путь сборки.

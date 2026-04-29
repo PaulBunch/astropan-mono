@@ -141,8 +141,8 @@ astropan-mono/
 │   └── references/          # References (in .gitignore)
 ├── build/                   # Temporary files (.ufo) (in .gitignore)
 ├── dist/                    # Build output (in .gitignore)
-│   ├── astropan-mono.woff2
-│   └── astropan-mono.ttf
+│   ├── AstroPanMono-Regular.woff2
+│   └── AstroPanMono-Regular.ttf
 ├── docs/
 │   ├── spec.md              # Technical specification
 │   ├── specimen.html        # Test page with all glyphs

@@ -51,3 +51,16 @@ The font is divided into two functional groups with different drawing approaches
 * **Advance Width 600 UPM:** Rejected due to the inability to preserve the structure of complex signs (Pluto, Virgo) without reducing stroke thickness below the critical 50 UPM
 * **Advance Width 900 UPM (1.5x of 600):** Despite being a standard multiple, this option was rejected after 10px (144 DPI) tests. Vertically symmetrical glyphs with delicate elements (e.g., Pluto) lose clarity
 * **Double-width (1200 UPM):** Rejected as excessively wide, creating overly large visual gaps in text
+
+---
+
+## 6. Versioning
+
+The font follows the `MAJOR.MINOR` versioning format, where the minor version is represented by three digits. This aligns with established font industry standards:
+
+| Digit                   | Change Logic                                                                 | Example           |
+| :---------------------- | :--------------------------------------------------------------------------- | :---------------- |
+| **Major (1.xxx)**       | New semantic glyph groups, metric changes, or breaking/incompatible changes. | `1.000` → `2.000` |
+| **Tenths (x.1xx)**      | New glyphs added within the existing system/categories.                      | `1.000` → `1.100` |
+| **Hundredths (x.x1x)**  | Corrections to outlines, coordinate tweaks, or design adjustments.           | `1.000` → `1.010` |
+| **Thousandths (x.xx1)** | Metadata updates or technical fixes without altering glyph shapes.           | `1.000` → `1.001` |

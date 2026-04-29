@@ -61,7 +61,7 @@
 ```css
 @font-face {
   font-family: 'AstroPan Mono';
-  src: url('https://paulbunch.github.io/astropan-mono/dist/astropan-mono.woff2') format('woff2');
+  src: url('https://paulbunch.github.io/astropan-mono/dist/AstroPanMono-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -97,7 +97,7 @@
 
 ```bash
 # Установка зависимостей
-pip install fontmake ufo2ft fonttools brotli
+pip install -r requirements.txt
 
 # Запуск сборки
 python scripts/build.py
@@ -111,6 +111,15 @@ python scripts/build.py
 
 ![Inspector Preview](/img/inspector.png)
 
+### Проверка качества (опционально)
+
+Вы можете запустить автоматизированную проверку качества, используя **FontBakery**:
+
+```bash
+pip install fontbakery
+fontbakery check-universal dist/AstroPanMono-Regular.ttf
+```
+
 ---
 
 ## Благодарности
@@ -119,6 +128,7 @@ python scripts/build.py
 * **[Inkscape](https://gitlab.com/inkscape/inkscape) & [FontForge](https://github.com/fontforge/fontforge) & [OpenType](https://github.com/opentypejs/opentype.js)** — за доступные инструменты
 * **[Google Fonts / Fontmake](https://github.com/googlefonts/fontmake)** — за инструментарий сборки
 * **[Unified Font Object (UFO)](https://github.com/unified-font-object/ufo-spec)** — за универсальный формат данных
+* **[FontBakery](https://github.com/googlefonts/fontbakery)** — за автоматизированный контроль качества и валидацию шрифта
 * **AI Collaborators (Gemini, Claude, Grok)** — за помощь в проектировании архитектуры сборки и автоматизации пайплайнов
 
 ---

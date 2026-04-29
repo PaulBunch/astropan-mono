@@ -11,7 +11,7 @@
 Важный момент по структуре: `specimen.html` сейчас лежит в `docs/` и обращается к шрифту через `/dist/`. На GitHub Pages нужно тоже запускать сервер из корня, чтобы не держать два разных пути для локальной работы и Pages.
 
 ```javascript
-const FONT_URL = '/dist/astropan-mono.ttf'; // работает и локально (с сервером)
+const FONT_URL = '/dist/AstroPanMono-Regular.ttf'; // работает и локально (с сервером)
 ```
 
 Локально запускать через `python -m http.server` из корня проекта.

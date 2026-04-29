@@ -139,8 +139,8 @@ astropan-mono/
 │   └── references/          # Референсы (в .gitignore)
 ├── build/                   # Временные файлы (.ufo) (в .gitignore)
 ├── dist/                    # Результат сборки (в .gitignore)
-│   ├── astropan-mono.woff2
-│   └── astropan-mono.ttf
+│   ├── AstroPanMono-Regular.woff2
+│   └── AstroPanMono-Regular.ttf
 ├── docs/
 │   ├── spec.md              # Техническое задание
 │   ├── specimen.html        # Тестовая страница со всеми глифами

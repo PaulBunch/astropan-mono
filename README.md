@@ -63,7 +63,7 @@ Microtypography in web (CSS):
 ```css
 @font-face {
   font-family: 'AstroPan Mono';
-  src: url('https://paulbunch.github.io/astropan-mono/dist/astropan-mono.woff2') format('woff2');
+  src: url('https://paulbunch.github.io/astropan-mono/dist/AstroPanMono-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -99,7 +99,7 @@ The script automatically imports vectors from Inkscape, normalizes curves, and g
 
 ```bash
 # Install dependencies
-pip install fontmake ufo2ft fonttools brotli
+pip install -r requirements.txt
 
 # Run build
 python scripts/build.py
@@ -113,6 +113,15 @@ For visual control, there is an interactive page [specimen.html](docs/specimen.h
 
 ![Inspector Preview](img/inspector.png)
 
+### Quality Check (optional)
+
+You can run an automated quality check using **FontBakery**:
+
+```bash
+pip install fontbakery
+fontbakery check-universal dist/AstroPanMono-Regular.ttf
+```
+
 ---
 
 ## Thanks
@@ -121,6 +130,7 @@ For visual control, there is an interactive page [specimen.html](docs/specimen.h
 * **[Inkscape](https://gitlab.com/inkscape/inkscape) & [FontForge](https://github.com/fontforge/fontforge) & [OpenType](https://github.com/opentypejs/opentype.js)** — for accessible tools
 * **[Google Fonts / Fontmake](https://github.com/googlefonts/fontmake)** — for the build toolchain
 * **[Unified Font Object (UFO)](https://github.com/unified-font-object/ufo-spec)** — for the universal data format
+* **[FontBakery](https://github.com/googlefonts/fontbakery)** — for automated quality assurance and font validation
 * **AI Collaborators (Gemini, Claude, Grok)** — for help in designing the build architecture and pipeline automation
 
 ---
