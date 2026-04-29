@@ -43,20 +43,20 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/dist
-          cp dist/astropan-mono.ttf   _site/dist/
-          cp dist/astropan-mono.woff2 _site/dist/
+          cp dist/AstroPanMono-Regular.ttf   _site/dist/
+          cp dist/AstroPanMono-Regular.woff2 _site/dist/
 
           # Создаем index.html из specimen.html
           cp docs/specimen.html       _site/index.html
 
           # 1. Заменяем путь в CSS (src: url(...))
-          # Ищем кавычку + /dist/astropan-mono и меняем на кавычку + dist/astropan-mono
-          sed -i "s|'/dist/astropan-mono|'dist/astropan-mono|g" _site/index.html
-          sed -i 's|"/dist/astropan-mono|"dist/astropan-mono|g' _site/index.html
+          # Ищем кавычку + /dist/AstroPanMono-Regular и меняем на кавычку + dist/AstroPanMono-Regular
+          sed -i "s|'/dist/AstroPanMono-Regular|'dist/AstroPanMono-Regular|g" _site/index.html
+          sed -i 's|"/dist/AstroPanMono-Regular|"dist/AstroPanMono-Regular|g' _site/index.html
 
           # 2. На случай относительного пути ../dist/ для локальной разработки
-          sed -i "s|'../dist/astropan-mono|'dist/astropan-mono|g" _site/index.html
-          sed -i 's|"../dist/astropan-mono|"dist/astropan-mono|g' _site/index.html
+          sed -i "s|'../dist/AstroPanMono-Regular|'dist/AstroPanMono-Regular|g" _site/index.html
+          sed -i 's|"../dist/AstroPanMono-Regular|"dist/AstroPanMono-Regular|g' _site/index.html
 
           # Копируем остальные файлы из docs/ если появятся (css, js, etc.)
           find docs/ -maxdepth 1 -type f ! -name 'specimen.html' \

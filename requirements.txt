@@ -2,4 +2,6 @@
 fontmake>=3.11.1
 fonttools[ufo,woff2,unicode]
 ufoLib2
+ufo2ft
 brotli
+gftools>=0.9.995
