@@ -511,6 +511,12 @@
     <div class="glyph-grid" id="grid-test"></div>
 </section>
 
+<!-- Icons -->
+<section class="section" id="section">
+    <div class="section-title">Icons <span class="badge badge-todo" id="cnt-icons"></span></div>
+    <div class="glyph-grid" id="grid-icons"></div>
+</section>
+
 <!-- Coexistence -->
 <section class="section">
     <div class="section-title">Coexistence with JetBrains Mono — click any glyph above</div>
@@ -608,6 +614,11 @@ const GROUPS = {
     test: [
         { name:'test_glyph', code:0xE000, label:'Test glyph' },
     ],
+    icons: [
+        { name:'anticlockwise', code:0x27F2,  label:'Anticlockwise',  short:'Clock' },
+        { name:'eye',           code:0x1F441, label:'Eye' },
+        { name:'crystal_ball',  code:0x1F52E, label:'Crystal Ball',   short:'Ball' },
+    ],
 };
 
 /* Обновлять по мере отрисовки глифов */
@@ -654,6 +665,9 @@ const DONE = new Set([
   'house_6',
   'house_9',
   'house_7',
+  'anticlockwise',
+  'crystal_ball',
+  'eye',
 ]);
 const WIP  = new Set([]);
 
@@ -1062,7 +1076,7 @@ function fillGrid(id, arr) {
 
 function refreshGrids() {
     Object.entries(GROUPS).forEach(([key, arr]) => fillGrid('grid-' + key, arr));
-    ['zodiac','planets','aspects','houses','test'].forEach(key => {
+    ['zodiac','planets','aspects','houses','test','icons'].forEach(key => {
         const el = document.getElementById('cnt-' + key);
         if (!el) return;
         const arr  = GROUPS[key];
