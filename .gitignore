@@ -75,3 +75,5 @@ src/preview.svg
 build/
 dist/
 /releases/
+# Игнорируем черновики и маркетинговые материалы
+docs/promos/
