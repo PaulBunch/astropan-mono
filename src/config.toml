@@ -1,6 +1,6 @@
 [font]
 family_name  = "AstroPan Mono"
-version      = "1.001"
+version      = "1.100"
 copyright    = "Copyright (c) 2026, Paul Bunch (p.m.puchkov@gmail.com), with Reserved Font Name \"AstroPan Mono\"."
 designer     = "Pavel M. Puchkov"
 designer_url = "https://github.com/PaulBunch"
@@ -108,6 +108,11 @@ house_9     = "U+E009"
 house_10    = "U+E00A"
 house_11    = "U+E00B"
 house_12    = "U+E00C"
+
+# Иконки
+anticlockwise = "U+27F2"
+eye           = "U+1F441"
+crystal_ball  = "U+1F52E"
 
 [glyph_widths]
 # Переопределение ширины для широких глифов
