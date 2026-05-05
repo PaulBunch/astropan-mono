@@ -45,14 +45,15 @@ The project is inspired by the engineering solutions of **JetBrains Mono**, adap
 
 ---
 
-## Font Set (v1.0)
+## Font Set (v1.1)
 
-The set includes **41 basic symbols**:
+The set includes **44 symbols**:
 
   * **Zodiac (12):** Standard Unicode positions
   * **Planets (10):** The main septener + outer planets
   * **Aspects (7):** Major and minor aspects (0°, 30°, 60°, 90°, 120°, 150°, 180°)
   * **Houses (12):** Located in the **PUA** area (`U+E001`–`U+E00C`)
+  * **Icons (3):** 'Anticlockwise', 'Crystal Ball', 'Eye'
 
 ---
 
