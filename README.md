@@ -142,4 +142,4 @@ Distributed under the **SIL Open Font License 1.1**. You are free to use, study,
 
 ---
 
-*This project is part of the AstroPan ecosystem.*
+*This project is part of the [AstroPan](https://github.com/PaulBunch/astropan) ecosystem.*
