@@ -4,7 +4,7 @@
 [![GitHub Downloads](https://img.shields.io/github/downloads/PaulBunch/astropan-mono/total)](https://github.com/PaulBunch/astropan-mono/releases/latest)
 [![GitHub License](https://img.shields.io/github/license/PaulBunch/astropan-mono)](LICENSE)
 
-[Read in English](README.md)
+[Read in English](/README.md)
 
 **AstroPan Mono** — специализированный иконочный шрифт для астрологических интерфейсов. Разработан для обеспечения предельной чёткости на малых кеглях (от **10px**) при строгом соблюдении моноширинной сетки.
 
