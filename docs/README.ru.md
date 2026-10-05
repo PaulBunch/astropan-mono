@@ -140,4 +140,4 @@ fontbakery check-universal dist/AstroPanMono-Regular.ttf
 
 ---
 
-*Проект является частью экосистемы AstroPan.*
+*Проект является частью экосистемы [AstroPan](https://github.com/PaulBunch/astropan).*
