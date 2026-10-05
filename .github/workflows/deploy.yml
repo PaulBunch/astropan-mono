@@ -1,11 +1,11 @@
-# Запускается при каждом пуше в main
+# Запускается при публикации релиза
 # Собирает шрифт и публикует specimen на GitHub Pages
 
 name: Build and deploy specimen
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch: # ручной запуск из интерфейса GitHub
 
 permissions:
