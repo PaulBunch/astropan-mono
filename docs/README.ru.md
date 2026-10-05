@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/v/release/PaulBunch/astropan-mono)](https://github.com/PaulBunch/astropan-mono/releases/latest)
 [![GitHub Downloads](https://img.shields.io/github/downloads/PaulBunch/astropan-mono/total)](https://github.com/PaulBunch/astropan-mono/releases/latest)
-[![GitHub License](https://img.shields.io/github/license/PaulBunch/astropan-mono)](LICENSE)
+[![GitHub License](https://img.shields.io/github/license/PaulBunch/astropan-mono)](/LICENSE)
 
 [Read in English](/README.md)
 
