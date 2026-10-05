@@ -1,5 +1,9 @@
 # AstroPan Mono
 
+[![GitHub release](https://img.shields.io/github/v/release/PaulBunch/astropan-mono)](https://github.com/PaulBunch/astropan-mono/releases/latest)
+[![GitHub Downloads](https://img.shields.io/github/downloads/PaulBunch/astropan-mono/total)](https://github.com/PaulBunch/astropan-mono/releases/latest)
+[![GitHub License](https://img.shields.io/github/license/PaulBunch/astropan-mono)](LICENSE)
+
 [Читать на русском](docs/README.ru.md)
 
 **AstroPan Mono** is a specialized icon font for astrological interfaces. It is designed for maximum clarity at small sizes (from **10px**) while strictly adhering to a monospaced grid.
